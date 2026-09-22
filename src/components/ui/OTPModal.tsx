@@ -53,34 +53,41 @@ export const OTPModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[9990] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+      <div className="fixed inset-0 z-[9990] flex items-center justify-center p-4 bg-[var(--bg-invert)]/80">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="relative w-full max-w-md p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800"
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="relative w-full max-w-md p-8 card"
         >
           <button
             onClick={closeOtpModal}
-            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+            className="absolute top-4 right-4 p-2 transition-colors hover:opacity-70"
+            style={{ color: 'var(--text-muted)' }}
           >
             <X className="w-5 h-5" />
           </button>
 
           <div className="flex flex-col items-center text-center">
-            <div className="w-14 h-14 mb-4 rounded-2xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shadow-inner">
-              <ShieldCheck className="w-8 h-8" />
+            <div
+              className="w-14 h-14 mb-4 rounded-[var(--r-md)] flex items-center justify-center"
+              style={{ background: 'var(--green-light)', color: 'var(--green)' }}
+            >
+              <ShieldCheck className="w-7 h-7" />
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Two-Factor OTP Verification
             </h3>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5">
-              <Mail className="w-4 h-4 text-sky-500" />
-              OTP code dispatched to: <span className="font-semibold text-slate-800 dark:text-slate-200">{pendingOtpEmail || 'your email'}</span>
+            <p className="mt-2 text-sm flex items-center justify-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+              <Mail className="w-4 h-4" style={{ color: 'var(--sage)' }} />
+              Code sent to: <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{pendingOtpEmail || 'your email'}</span>
             </p>
 
-            <div className="mt-2 px-3 py-1.5 bg-sky-50 dark:bg-sky-950/50 rounded-lg text-xs font-mono text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+            <div
+              className="mt-4 px-3 py-1.5 rounded-lg text-xs font-mono font-medium"
+              style={{ background: 'var(--sage-light)', color: 'var(--sage)', border: '1px solid var(--sage-light)' }}
+            >
               Demo Code: <span className="font-bold">123456</span>
             </div>
 
@@ -96,29 +103,37 @@ export const OTPModal: React.FC = () => {
                     value={digit}
                     onChange={(e) => handleChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
-                    className="w-11 h-13 text-center text-xl font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all shadow-sm"
+                    className="w-12 h-14 text-center text-xl font-bold rounded-xl outline-none transition-all"
+                    style={{
+                      background: 'var(--bg-muted)',
+                      color: 'var(--text-primary)',
+                      border: '1.5px solid var(--border)',
+                    }}
+                    onFocus={(e) => ((e.target as HTMLInputElement).style.borderColor = 'var(--green)')}
+                    onBlur={(e) => ((e.target as HTMLInputElement).style.borderColor = 'var(--border)')}
                   />
                 ))}
               </div>
 
               {errorMsg && (
-                <p className="mt-3 text-xs text-rose-500 font-medium">{errorMsg}</p>
+                <p className="mt-4 text-xs font-medium" style={{ color: 'var(--red)' }}>{errorMsg}</p>
               )}
 
               <button
                 type="submit"
-                className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-sky-500/25 transition-all transform active:scale-98"
+                className="btn btn-primary w-full mt-6 py-3.5"
               >
                 Verify & Continue
               </button>
             </form>
 
-            <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-5 text-xs" style={{ color: 'var(--text-muted)' }}>
               Didn't receive code?{' '}
               <button
                 type="button"
                 onClick={() => showToast('OTP Resent', 'A fresh code has been sent to your email.', 'info')}
-                className="text-sky-600 dark:text-sky-400 font-medium hover:underline"
+                className="font-semibold hover:underline"
+                style={{ color: 'var(--green)' }}
               >
                 Resend OTP
               </button>

@@ -15,7 +15,6 @@ import {
   ShieldAlert,
   Clock,
   Bed,
-  CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../context/LocationContext';
@@ -31,19 +30,18 @@ export const EmergencyPage: React.FC = () => {
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
-      case 'HeartPulse': return <HeartPulse className="w-6 h-6" />;
-      case 'Brain': return <Brain className="w-6 h-6" />;
-      case 'Activity': return <Activity className="w-6 h-6" />;
-      case 'Bone': return <Bone className="w-6 h-6" />;
-      case 'Flame': return <Flame className="w-6 h-6" />;
-      case 'Ambulance': return <Ambulance className="w-6 h-6" />;
-      case 'Stethoscope': return <Stethoscope className="w-6 h-6" />;
-      case 'Baby': return <Baby className="w-6 h-6" />;
-      default: return <ShieldAlert className="w-6 h-6" />;
+      case 'HeartPulse': return <HeartPulse className="w-5 h-5" />;
+      case 'Brain': return <Brain className="w-5 h-5" />;
+      case 'Activity': return <Activity className="w-5 h-5" />;
+      case 'Bone': return <Bone className="w-5 h-5" />;
+      case 'Flame': return <Flame className="w-5 h-5" />;
+      case 'Ambulance': return <Ambulance className="w-5 h-5" />;
+      case 'Stethoscope': return <Stethoscope className="w-5 h-5" />;
+      case 'Baby': return <Baby className="w-5 h-5" />;
+      default: return <ShieldAlert className="w-5 h-5" />;
     }
   };
 
-  // Calculate distance & sort hospitals by proximity
   const sortedHospitals = hospitals
     .map((hosp) => {
       const userLat = location.latitude || 28.5355;
@@ -57,7 +55,6 @@ export const EmergencyPage: React.FC = () => {
     })
     .sort((a, b) => a.distanceKm - b.distanceKm);
 
-  // Filter hospitals matching selected emergency category
   const filteredHospitals = sortedHospitals.filter((hosp) => {
     if (selectedCategory === 'all') return true;
     if (selectedCategory === 'ambulance') return hosp.hasAmbulance;
@@ -66,39 +63,44 @@ export const EmergencyPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-7xl mx-auto space-y-10">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 transition-colors" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-6xl space-y-12">
 
         {/* Emergency Alert Banner */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 p-6 sm:p-10 shadow-2xl shadow-red-600/30">
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider">
-                <span className="w-2.5 h-2.5 rounded-full bg-white animate-ping" />
-                Zero-Login Instant Triage
+        <div
+          className="relative overflow-hidden rounded-[var(--r-lg)] p-8 sm:p-12 shadow-[var(--shadow-md)] animate-fade-up"
+          style={{ background: 'var(--red-light)', border: '1px solid rgba(212, 106, 96, 0.2)' }}
+        >
+          {/* Ambient red glow behind banner */}
+          <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-[var(--red)] opacity-10 blur-3xl" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="space-y-4 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest"
+                   style={{ background: '#FFFFFF', color: 'var(--red)', boxShadow: 'var(--shadow-xs)' }}>
+                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--red)' }} />
+                Instant Zero-Login Triage
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-                I Need Emergency Help
+              <h1 className="display-font" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: 'var(--red)' }}>
+                Immediate Assistance
               </h1>
 
-              <p className="text-white/90 text-sm sm:text-base leading-relaxed">
-                Select your urgent medical condition below. We automatically locate nearby ER-equipped hospitals, real-time bed availability, and 1-click direct dispatcher calling.
+              <p className="text-sm leading-relaxed max-w-lg" style={{ color: 'var(--text-secondary)' }}>
+                Select an urgent medical condition below. We will instantly locate nearby ER-equipped hospitals, real-time ICU availability, and provide 1-click dispatcher routing.
               </p>
             </div>
 
             {/* GPS Location Status Box */}
-            <div className="bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/20 w-full md:w-auto min-w-[280px]">
+            <div className="card p-5 w-full md:w-auto min-w-[280px]" style={{ background: 'var(--bg-surface)' }}>
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-sky-500/20 text-sky-400">
-                  <MapPin className="w-5 h-5 animate-bounce" />
+                <div className="w-10 h-10 rounded-[var(--r-sm)] flex items-center justify-center" style={{ background: 'var(--green-light)' }}>
+                  <MapPin className="w-5 h-5 animate-bounce" style={{ color: 'var(--green)' }} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white">Your Detected GPS</h4>
-                  <p className="text-[11px] text-slate-300 font-mono">
-                    {location.loading
-                      ? 'Detecting GPS coordinates...'
-                      : location.address || 'Sarita Vihar, New Delhi'}
+                  <h4 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Detected GPS</h4>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    {location.loading ? 'Locating...' : location.address || 'Sarita Vihar, ND'}
                   </p>
                 </div>
               </div>
@@ -108,7 +110,10 @@ export const EmergencyPage: React.FC = () => {
                   requestLocation();
                   showToast('Location Refreshed', 'Recalculating distances to nearest hospital ERs.', 'info');
                 }}
-                className="mt-3 w-full py-2 px-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
+                className="mt-4 w-full py-2.5 rounded-[var(--r-sm)] text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+                style={{ background: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)'; (e.currentTarget as HTMLElement).style.background = 'var(--green-light)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'; (e.currentTarget as HTMLElement).style.background = 'var(--bg-muted)'; }}
               >
                 <Navigation className="w-3.5 h-3.5" /> Re-detect My Location
               </button>
@@ -116,18 +121,19 @@ export const EmergencyPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 8 Required Emergency Categories Selection */}
-        <div className="space-y-4">
+        {/* Categories */}
+        <div className="space-y-5 animate-fade-up-delay-1">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-red-500" /> Select Emergency Category
+            <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <ShieldAlert className="w-5 h-5" style={{ color: 'var(--red)' }} /> What is the emergency?
             </h2>
             {selectedCategory !== 'all' && (
               <button
                 onClick={() => setSelectedCategory('all')}
-                className="text-xs text-sky-400 hover:underline"
+                className="text-xs font-semibold hover:underline"
+                style={{ color: 'var(--text-muted)' }}
               >
-                Clear Filter (Show All Hospitals)
+                Clear Selection
               </button>
             )}
           </div>
@@ -139,36 +145,41 @@ export const EmergencyPage: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(isSelected ? 'all' : cat.id)}
-                  className={`p-3.5 rounded-2xl flex flex-col items-center text-center transition-all transform active:scale-95 border ${
-                    isSelected
-                      ? 'bg-gradient-to-b ' + cat.color + ' text-white border-white/40 shadow-lg scale-105'
-                      : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-800/80'
+                  className={`p-4 rounded-[var(--r-md)] flex flex-col items-center justify-center text-center transition-all ${
+                    isSelected ? 'shadow-[var(--shadow-md)] scale-[1.02]' : 'hover:scale-[1.02]'
                   }`}
+                  style={{
+                    background: isSelected ? 'var(--red)' : 'var(--bg-surface)',
+                    border: `1px solid ${isSelected ? 'var(--red)' : 'var(--border)'}`,
+                    color: isSelected ? '#FFFFFF' : 'var(--text-secondary)',
+                  }}
                 >
-                  <div className={`p-2.5 rounded-xl mb-2 ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-200'}`}>
+                  <div
+                    className="mb-2 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                    style={{ background: isSelected ? 'rgba(255,255,255,0.2)' : 'var(--red-light)', color: isSelected ? '#FFFFFF' : 'var(--red)' }}
+                  >
                     {getCategoryIcon(cat.iconName)}
                   </div>
-                  <span className="text-xs font-bold leading-tight">{cat.name}</span>
+                  <span className="text-[11px] font-bold leading-tight">{cat.name}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Nearby Hospitals Sorted by Distance */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                Nearby ER Hospitals
-                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-red-950 text-red-400 border border-red-800">
-                  {filteredHospitals.length} Available
-                </span>
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Sorted by real-time Haversine proximity to your detected position.
-              </p>
-            </div>
+        {/* Nearby ER Hospitals */}
+        <div className="space-y-6 animate-fade-up-delay-2 pt-6 border-t" style={{ borderColor: 'var(--border)' }}>
+          <div>
+            <h3 className="display-font text-3xl flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
+              Nearest Emergency Centers
+              <span className="px-2.5 py-1 rounded-lg text-xs font-sans tracking-wide"
+                    style={{ background: 'var(--red-light)', color: 'var(--red)' }}>
+                {filteredHospitals.length} Found
+              </span>
+            </h3>
+            <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
+              Ranked by real-time driving proximity to your detected location.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -177,44 +188,35 @@ export const EmergencyPage: React.FC = () => {
                 key={hosp.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-900 rounded-3xl p-6 border border-slate-800 hover:border-red-500/50 transition-all shadow-xl flex flex-col justify-between space-y-5"
+                className="card p-6 sm:p-8 flex flex-col justify-between space-y-6 group"
               >
                 <div>
-                  {/* Top Badge Info */}
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-red-500/10 text-red-400 border border-red-500/30">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <span className="tag tag-red flex items-center gap-1.5 px-3 py-1.5 shadow-sm text-[11px]">
                       <Clock className="w-3.5 h-3.5" />
                       {formatDistance(hosp.distanceKm)} ({hosp.driveTime} drive)
                     </span>
-
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
-                      <Bed className="w-3.5 h-3.5 text-emerald-400" />
-                      <strong className="text-emerald-400">{hosp.availableICUBeds}</strong> ICU Beds Free
+                    <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: 'var(--sage)' }}>
+                      <Bed className="w-4 h-4" />
+                      <strong>{hosp.availableICUBeds}</strong> ICU Free
                     </span>
                   </div>
 
-                  <h4 className="text-xl font-bold text-white">{hosp.name}</h4>
-                  <p className="text-xs text-slate-400 mt-1 flex items-start gap-1.5">
-                    <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                  <h4 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{hosp.name}</h4>
+                  <p className="text-sm mt-1 flex items-start gap-1.5" style={{ color: 'var(--text-muted)' }}>
+                    <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
                     {hosp.address}, {hosp.city}
                   </p>
 
-                  {/* Available Emergency Specialities */}
-                  <div className="mt-4 pt-3 border-t border-slate-800/80">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                      Available Emergency Facilities:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {hosp.departments.map((dept, i) => (
-                        <span
-                          key={i}
-                          className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700/80"
-                        >
+                  <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+                    <div className="flex flex-wrap gap-2">
+                      {hosp.departments.slice(0, 3).map((dept, i) => (
+                        <span key={i} className="px-2.5 py-1 rounded-md text-[10px] font-semibold" style={{ background: 'var(--bg-muted)', color: 'var(--text-secondary)' }}>
                           {dept}
                         </span>
                       ))}
                       {hosp.hasAmbulance && (
-                        <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                        <span className="px-2.5 py-1 rounded-md text-[10px] font-bold flex items-center gap-1" style={{ background: 'var(--gold-light)', color: 'var(--gold)' }}>
                           <Ambulance className="w-3 h-3" /> 24/7 Ambulance
                         </span>
                       )}
@@ -222,22 +224,20 @@ export const EmergencyPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Prompt requirement: One-click Call & One-click Google Maps Buttons */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <a
                     href={`tel:${hosp.emergencyNumber}`}
-                    className="py-3 px-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-xs font-bold rounded-2xl shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                    className="btn btn-emergency flex items-center justify-center gap-2 py-3.5 shadow-[var(--shadow-sm)]"
                   >
-                    <PhoneCall className="w-4 h-4 animate-bounce" /> Call ER ({hosp.emergencyNumber})
+                    <PhoneCall className="w-4 h-4" /> Call ER ({hosp.emergencyNumber})
                   </a>
-
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${hosp.latitude},${hosp.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-2xl border border-slate-700 flex items-center justify-center gap-2 transition-colors"
+                    className="btn btn-ghost flex items-center justify-center gap-2 py-3.5"
                   >
-                    <Navigation className="w-4 h-4 text-sky-400" /> Google Maps Nav
+                    <Navigation className="w-4 h-4" /> Navigate
                   </a>
                 </div>
               </motion.div>

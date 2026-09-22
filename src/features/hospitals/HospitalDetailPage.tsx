@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Building2,
   MapPin,
   PhoneCall,
   Mail,
   Star,
-  Clock,
   Bed,
-  Ambulance,
   CheckCircle2,
   Stethoscope,
-  ChevronRight,
   ShieldAlert,
   MessageSquare,
   Navigation,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Doctor, Review } from '../../types';
 import { useToast } from '../../components/ui/Toast';
 
 interface HospitalDetailPageProps {
@@ -66,275 +61,261 @@ export const HospitalDetailPage: React.FC<HospitalDetailPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-7xl space-y-10">
         
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+          className="text-sm font-bold flex items-center gap-2 hover:opacity-80 transition-opacity animate-fade-in"
+          style={{ color: 'var(--green)' }}
         >
-          ← Back to Hospital Search
+          &larr; Back to Results
         </button>
 
         {/* Hospital Header Banner */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 dark:border-slate-800 space-y-6">
-          <div className="flex flex-col lg:flex-row justify-between gap-6">
+        <div className="card p-8 sm:p-12 animate-fade-up">
+          <div className="flex flex-col lg:flex-row justify-between gap-8">
             
-            <div className="space-y-3 max-w-3xl">
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                  Reg No: {hospital.registrationNumber}
-                </span>
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  Verified NABH Facility
-                </span>
+            <div className="space-y-4 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="tag tag-sage border">Reg No: {hospital.registrationNumber}</span>
+                <span className="tag tag-green border"><ShieldAlert className="w-3.5 h-3.5" /> Verified NABH Facility</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+              <h1 className="display-font" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--text-primary)' }}>
                 {hospital.name}
               </h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{hospital.tagline}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{hospital.tagline}</p>
 
-              <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 dark:text-slate-300 pt-2">
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-sky-500" /> {hospital.address}, {hospital.city}, {hospital.state}
+              <div className="flex flex-wrap items-center gap-5 text-sm pt-2" style={{ color: 'var(--text-secondary)' }}>
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4" style={{ color: 'var(--green)' }} /> {hospital.address}, {hospital.city}, {hospital.state}
                 </span>
-                <span className="flex items-center gap-1 text-amber-500 font-bold">
-                  <Star className="w-4 h-4 fill-amber-400" /> {hospital.rating} ({hospital.reviewCount} Ratings)
+                <span className="flex items-center gap-1 font-bold" style={{ color: 'var(--gold)' }}>
+                  <Star className="w-4 h-4 fill-current" /> {hospital.rating} <span className="font-normal text-xs" style={{ color: 'var(--text-muted)' }}>({hospital.reviewCount} Ratings)</span>
                 </span>
               </div>
             </div>
 
             {/* Quick Stats Box */}
-            <div className="bg-slate-50 dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 flex flex-col justify-between space-y-4 min-w-[280px]">
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500 dark:text-slate-400">Available General Beds:</span>
-                  <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{hospital.availableBeds} / {hospital.totalBeds}</strong>
+            <div className="p-6 rounded-[var(--r-md)] flex flex-col justify-between space-y-5 min-w-[280px]" style={{ background: 'var(--bg-muted)' }}>
+              <div className="space-y-3 text-xs font-medium">
+                <div className="flex justify-between border-b pb-2" style={{ borderColor: 'var(--border)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Available General Beds:</span>
+                  <strong style={{ color: 'var(--green)' }}>{hospital.availableBeds} / {hospital.totalBeds}</strong>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500 dark:text-slate-400">ICU Beds Free:</span>
-                  <strong className="text-sky-600 dark:text-sky-400 font-bold">{hospital.availableICUBeds} / {hospital.totalICUBeds}</strong>
+                <div className="flex justify-between border-b pb-2" style={{ borderColor: 'var(--border)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>ICU Beds Free:</span>
+                  <strong style={{ color: 'var(--red)' }}>{hospital.availableICUBeds} / {hospital.totalICUBeds}</strong>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500 dark:text-slate-400">Ambulance Service:</span>
-                  <strong className="text-amber-500 font-bold">{hospital.hasAmbulance ? '24/7 Available' : 'On Demand'}</strong>
+                <div className="flex justify-between pb-1">
+                  <span style={{ color: 'var(--text-secondary)' }}>Ambulance Service:</span>
+                  <strong style={{ color: 'var(--gold)' }}>{hospital.hasAmbulance ? '24/7 Available' : 'On Demand'}</strong>
                 </div>
               </div>
 
               <a
                 href={`tel:${hospital.emergencyNumber}`}
-                className="py-3 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                className="btn btn-emergency w-full flex items-center justify-center gap-2 py-3"
               >
-                <PhoneCall className="w-4 h-4" /> Emergency ER ({hospital.emergencyNumber})
+                <PhoneCall className="w-4 h-4" /> ER Helpline ({hospital.emergencyNumber})
               </a>
             </div>
           </div>
 
           {/* Image Gallery */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-8 mt-6" style={{ borderTop: '1px solid var(--border)' }}>
             {hospital.images.map((imgUrl, idx) => (
               <img
                 key={idx}
                 src={imgUrl}
                 alt={`${hospital.name} gallery ${idx + 1}`}
-                className="w-full h-48 rounded-2xl object-cover hover:scale-102 transition-transform shadow-sm"
+                className="w-full h-56 rounded-[var(--r-md)] object-cover hover:scale-[1.02] transition-transform"
               />
             ))}
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 gap-8">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === 'overview'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Overview & Services
-          </button>
-          <button
-            onClick={() => setActiveTab('doctors')}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === 'doctors'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Doctors ({hospitalDoctors.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('reviews')}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === 'reviews'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Ratings & Reviews ({hospitalReviews.length})
-          </button>
+        <div className="flex border-b gap-8 animate-fade-up-delay-1" style={{ borderColor: 'var(--border)' }}>
+          {[
+            { id: 'overview', label: 'Overview & Services' },
+            { id: 'doctors', label: `Doctors (${hospitalDoctors.length})` },
+            { id: 'reviews', label: `Reviews (${hospitalReviews.length})` },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className="pb-4 text-sm font-semibold whitespace-nowrap transition-colors relative"
+              style={{ color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)' }}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeHospDetailTab"
+                  className="absolute bottom-[-1px] left-0 right-0 h-0.5 rounded-full"
+                  style={{ background: 'var(--green)' }}
+                />
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Tab Contents */}
-        {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">About Hospital</h3>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {hospital.description}
-                </p>
-              </div>
-
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Clinical Departments</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {hospital.departments.map((dept, i) => (
-                    <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-teal-500" /> {dept}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Advanced Procedures & Treatments</h3>
-                <div className="flex flex-wrap gap-2">
-                  {hospital.treatments.map((treat, i) => (
-                    <span key={i} className="px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 text-xs font-medium text-sky-700 dark:text-sky-300">
-                      {treat}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Sidebar Contact & Google Maps */}
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Contact & Address</h3>
-                
-                <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
-                    <span>{hospital.address}, {hospital.city}, {hospital.state} - {hospital.pincode}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <PhoneCall className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>{hospital.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-teal-500 shrink-0" />
-                    <span>{hospital.email}</span>
-                  </div>
+        <div className="animate-fade-in">
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
+                <div className="card p-8 space-y-4">
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>About Hospital</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    {hospital.description}
+                  </p>
                 </div>
 
-                {/* Google Maps Embed Placeholder */}
-                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${hospital.latitude},${hospital.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Navigation className="w-4 h-4 text-sky-500" /> Open Directions on Google Maps
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Doctors Tab */}
-        {activeTab === 'doctors' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {hospitalDoctors.map((doc) => (
-              <div key={doc.id} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 flex gap-4">
-                <img src={doc.photo} alt={doc.name} className="w-20 h-20 rounded-2xl object-cover ring-2 ring-teal-500/30 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <h4 className="text-base font-bold text-slate-900 dark:text-white">{doc.name}</h4>
-                  <p className="text-xs text-slate-500">{doc.qualification} • {doc.experienceYears} Yrs Exp</p>
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white">Fee: ₹{doc.consultationFee}</span>
-                    <button
-                      onClick={() => onSelectDoctor(doc.id)}
-                      className="py-1.5 px-3 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors"
-                    >
-                      Book Slot
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Reviews Tab */}
-        {activeTab === 'reviews' && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Patient Reviews</h3>
-              <button
-                onClick={() => setIsAddingReview(!isAddingReview)}
-                className="py-2 px-4 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
-              >
-                <MessageSquare className="w-4 h-4" /> Write Review
-              </button>
-            </div>
-
-            {isAddingReview && (
-              <form onSubmit={handleReviewSubmit} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Rating</label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setNewRating(star)}
-                        className={`p-2 rounded-lg text-lg ${star <= newRating ? 'text-amber-400' : 'text-slate-300'}`}
-                      >
-                        ★
-                      </button>
+                <div className="card p-8 space-y-5">
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Clinical Departments</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {hospital.departments.map((dept, i) => (
+                      <div key={i} className="p-3.5 rounded-[var(--r-md)] text-xs font-semibold flex items-center gap-2" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border)' }}>
+                        <CheckCircle2 className="w-4 h-4" style={{ color: 'var(--sage)' }} /> {dept}
+                      </div>
                     ))}
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Your Review</label>
-                  <textarea
-                    rows={3}
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Describe your care experience, cleanliness, staff politeness..."
-                    className="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                  />
-                </div>
-                <button type="submit" className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl">
-                  Post Patient Review
-                </button>
-              </form>
-            )}
 
-            <div className="space-y-4">
-              {hospitalReviews.map((rev) => (
-                <div key={rev.id} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white">{rev.patientName}</span>
-                    <div className="flex text-amber-400 text-xs">
-                      {'★'.repeat(Math.round(rev.rating))}
+                <div className="card p-8 space-y-5">
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Advanced Procedures</h3>
+                  <div className="flex flex-wrap gap-2.5">
+                    {hospital.treatments.map((treat, i) => (
+                      <span key={i} className="px-3.5 py-1.5 rounded-md text-xs font-medium" style={{ background: 'var(--green-light)', color: 'var(--green)' }}>
+                        {treat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar Contact & Google Maps */}
+              <div className="space-y-8">
+                <div className="card p-8 space-y-6">
+                  <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Contact Information</h3>
+                  
+                  <div className="space-y-4 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--green)' }} />
+                      <span>{hospital.address}, {hospital.city}, {hospital.state} - {hospital.pincode}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <PhoneCall className="w-4 h-4 shrink-0" style={{ color: 'var(--sage)' }} />
+                      <span>{hospital.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Mail className="w-4 h-4 shrink-0" style={{ color: 'var(--gold)' }} />
+                      <span>{hospital.email}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300">{rev.comment}</p>
-                  <span className="text-[10px] text-slate-400">{rev.date}</span>
+
+                  <div className="pt-5" style={{ borderTop: '1px solid var(--border)' }}>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${hospital.latitude},${hospital.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-ghost w-full py-3 flex items-center justify-center gap-2"
+                    >
+                      <Navigation className="w-4 h-4" /> Directions via Maps
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Doctors Tab */}
+          {activeTab === 'doctors' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {hospitalDoctors.map((doc) => (
+                <div key={doc.id} className="card p-6 flex items-center gap-5 hover:scale-[1.01] transition-transform">
+                  <img src={doc.photo} alt={doc.name} className="w-20 h-20 rounded-[var(--r-md)] object-cover shrink-0" style={{ border: '2px solid var(--green-light)' }} />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>{doc.name}</h4>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{doc.qualification} • {doc.experienceYears} Yrs Exp</p>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 mt-2" style={{ borderTop: '1px solid var(--border)' }}>
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Fee: ₹{doc.consultationFee}</span>
+                      <button
+                        onClick={() => onSelectDoctor(doc.id)}
+                        className="btn btn-primary py-1.5 px-3 text-[11px]"
+                      >
+                        Book Slot
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Reviews Tab */}
+          {activeTab === 'reviews' && (
+            <div className="space-y-8">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Patient Feedback</h3>
+                <button
+                  onClick={() => setIsAddingReview(!isAddingReview)}
+                  className="btn btn-primary flex items-center gap-2 py-2.5 px-4"
+                >
+                  <MessageSquare className="w-4 h-4" /> Write Review
+                </button>
+              </div>
+
+              {isAddingReview && (
+                <form onSubmit={handleReviewSubmit} className="card p-8 space-y-5 bg-[var(--green-light)]">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Rating</label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star} type="button" onClick={() => setNewRating(star)}
+                          className="p-1 text-2xl transition-transform hover:scale-110"
+                          style={{ color: star <= newRating ? 'var(--gold)' : 'var(--border)' }}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Your Review</label>
+                    <textarea
+                      rows={3} value={newComment} onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Describe your care experience..."
+                      className="input-base"
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary py-2.5 px-6">
+                    Post Patient Review
+                  </button>
+                </form>
+              )}
+
+              <div className="space-y-4">
+                {hospitalReviews.map((rev) => (
+                  <div key={rev.id} className="card p-6 space-y-2 border-l-4" style={{ borderLeftColor: 'var(--sage)' }}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{rev.patientName}</span>
+                      <div className="flex text-xs" style={{ color: 'var(--gold)' }}>
+                        {'★'.repeat(Math.round(rev.rating))}
+                      </div>
+                    </div>
+                    <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>"{rev.comment}"</p>
+                    <span className="text-[10px] block mt-2" style={{ color: 'var(--text-muted)' }}>{rev.date}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
       </div>
     </div>

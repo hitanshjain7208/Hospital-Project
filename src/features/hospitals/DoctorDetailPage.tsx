@@ -5,10 +5,7 @@ import {
   Building2,
   Star,
   Clock,
-  Calendar,
   Languages,
-  Award,
-  CheckCircle2,
   DollarSign,
   MessageSquare,
 } from 'lucide-react';
@@ -30,136 +27,162 @@ export const DoctorDetailPage: React.FC<DoctorDetailPageProps> = ({ doctorId, on
   const [selectedDate, setSelectedDate] = useState('2026-09-25');
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-6xl space-y-10">
         
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+          className="text-sm font-bold flex items-center gap-2 hover:opacity-80 transition-opacity animate-fade-in"
+          style={{ color: 'var(--green)' }}
         >
-          ← Back to Search / Directory
+          &larr; Back to Medical Directory
         </button>
 
         {/* Doctor Header Profile Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-8">
-          <img
-            src={doctor.photo}
-            alt={doctor.name}
-            className="w-36 h-36 rounded-3xl object-cover ring-4 ring-teal-500/30 shrink-0 mx-auto md:mx-0 shadow-md"
-          />
+        <div className="card p-8 sm:p-12 animate-fade-up">
+          <div className="flex flex-col md:flex-row gap-10">
+            <img
+              src={doctor.photo}
+              alt={doctor.name}
+              className="w-40 h-40 rounded-[var(--r-lg)] object-cover shrink-0 mx-auto md:mx-0 shadow-[var(--shadow-sm)]"
+              style={{ border: '4px solid var(--green-light)' }}
+            />
 
-          <div className="flex-1 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
-                  {doctor.specialization}
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-                  {doctor.name}
-                </h1>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{doctor.qualification}</p>
-              </div>
-
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-500 border border-amber-200 dark:border-amber-800">
-                <Star className="w-5 h-5 fill-amber-400" />
-                <span className="text-base font-black">{doctor.rating}</span>
-                <span className="text-xs text-slate-400">({doctor.reviewCount} Reviews)</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-100 dark:border-slate-800">
-              <div>
-                <span className="text-slate-400 block">Experience</span>
-                <strong className="text-slate-900 dark:text-white">{doctor.experienceYears} Years</strong>
-              </div>
-              <div>
-                <span className="text-slate-400 block">Registration</span>
-                <strong className="text-slate-900 dark:text-white">{doctor.medicalRegistrationNumber}</strong>
-              </div>
-              <div>
-                <span className="text-slate-400 block">Consultation Fee</span>
-                <strong className="text-emerald-600 dark:text-emerald-400 font-extrabold text-sm">₹{doctor.consultationFee}</strong>
-              </div>
-              <div>
-                <span className="text-slate-400 block">Languages</span>
-                <strong className="text-slate-900 dark:text-white">{doctor.languages.join(', ')}</strong>
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pt-2">
-              {doctor.bio}
-            </p>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setIsBookingModalOpen(true)}
-                className="py-3 px-8 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-500/25 transition-transform active:scale-95"
-              >
-                Book Appointment Now
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Available Slots & Schedule */}
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-6">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Clock className="w-5 h-5 text-sky-500" /> Choose Consultation Date & Slot
-          </h3>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Select Date</label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Available Time Slots</label>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {doctor.availableSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    onClick={() => setSelectedSlot(slot)}
-                    className={`py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
-                      selectedSlot === slot
-                        ? 'bg-teal-600 text-white border-teal-600 shadow-md'
-                        : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-teal-500'
-                    }`}
-                  >
-                    {slot}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews */}
-        <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-amber-500" /> Patient Feedback & Ratings
-          </h3>
-
-          <div className="space-y-3">
-            {doctorReviews.length === 0 ? (
-              <p className="text-xs text-slate-400 py-2">No reviews recorded yet for this specialist.</p>
-            ) : (
-              doctorReviews.map((r) => (
-                <div key={r.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-1">
-                  <div className="flex justify-between items-center text-xs font-bold text-slate-900 dark:text-white">
-                    <span>{r.patientName}</span>
-                    <span className="text-amber-400">{'★'.repeat(Math.round(r.rating))}</span>
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300">{r.comment}</p>
+            <div className="flex-1 space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <span className="tag tag-sage">{doctor.specialization}</span>
+                  <h1 className="display-font mt-3" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', color: 'var(--text-primary)' }}>
+                    {doctor.name}
+                  </h1>
+                  <p className="text-sm font-medium mt-1" style={{ color: 'var(--text-secondary)' }}>{doctor.qualification}</p>
                 </div>
-              ))
-            )}
+
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border" style={{ background: 'var(--gold-light)', color: 'var(--gold)', borderColor: 'rgba(241,216,163,0.3)' }}>
+                  <Star className="w-5 h-5 fill-current" />
+                  <span className="text-base font-black">{doctor.rating}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>({doctor.reviewCount} Reviews)</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div>
+                  <span className="block uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Experience</span>
+                  <strong className="text-sm" style={{ color: 'var(--text-primary)' }}>{doctor.experienceYears} Years</strong>
+                </div>
+                <div>
+                  <span className="block uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Registration</span>
+                  <strong className="text-sm" style={{ color: 'var(--text-primary)' }}>{doctor.medicalRegistrationNumber}</strong>
+                </div>
+                <div>
+                  <span className="block uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Consultation Fee</span>
+                  <strong className="text-sm font-extrabold" style={{ color: 'var(--green)' }}>₹{doctor.consultationFee}</strong>
+                </div>
+                <div>
+                  <span className="block uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Languages</span>
+                  <strong className="text-sm" style={{ color: 'var(--text-primary)' }}>{doctor.languages.join(', ')}</strong>
+                </div>
+              </div>
+
+              <p className="text-sm leading-relaxed pt-2" style={{ color: 'var(--text-secondary)' }}>
+                {doctor.bio}
+              </p>
+
+              <div className="pt-4 flex justify-start md:justify-end">
+                <button
+                  onClick={() => setIsBookingModalOpen(true)}
+                  className="btn btn-primary py-3.5 px-8 w-full md:w-auto"
+                >
+                  Book Appointment Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-up-delay-1">
+          
+          <div className="lg:col-span-2 space-y-8">
+            {/* Available Slots */}
+            <div className="card p-8 space-y-6">
+              <h3 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <Clock className="w-5 h-5" style={{ color: 'var(--green)' }} /> Choose Consultation Slot
+              </h3>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Select Date</label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="input-base w-full sm:w-auto"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Available Times</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {doctor.availableSlots.map((slot) => (
+                      <button
+                        key={slot}
+                        onClick={() => setSelectedSlot(slot)}
+                        className="py-3 px-4 rounded-[var(--r-md)] text-sm font-bold border transition-all"
+                        style={{
+                          background: selectedSlot === slot ? 'var(--green)' : 'transparent',
+                          color: selectedSlot === slot ? '#fff' : 'var(--text-secondary)',
+                          borderColor: selectedSlot === slot ? 'var(--green)' : 'var(--border)',
+                          boxShadow: selectedSlot === slot ? 'var(--shadow-md)' : 'none',
+                        }}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews */}
+            <div className="card p-8 space-y-6">
+              <h3 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <MessageSquare className="w-5 h-5" style={{ color: 'var(--gold)' }} /> Patient Reviews
+              </h3>
+
+              <div className="space-y-4">
+                {doctorReviews.length === 0 ? (
+                  <p className="text-sm py-2" style={{ color: 'var(--text-muted)' }}>No reviews recorded yet for this specialist.</p>
+                ) : (
+                  doctorReviews.map((r) => (
+                    <div key={r.id} className="p-5 rounded-[var(--r-md)] space-y-2 border-l-4" style={{ background: 'var(--bg-muted)', borderLeftColor: 'var(--sage)' }}>
+                      <div className="flex justify-between items-center text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                        <span>{r.patientName}</span>
+                        <span style={{ color: 'var(--gold)' }}>{'★'.repeat(Math.round(r.rating))}</span>
+                      </div>
+                      <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>"{r.comment}"</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            <div className="card p-8 space-y-5">
+              <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Hospital Affiliation</h3>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--green-light)', color: 'var(--green)' }}>
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{doctor.hospitalName}</h4>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Primary consulting location</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

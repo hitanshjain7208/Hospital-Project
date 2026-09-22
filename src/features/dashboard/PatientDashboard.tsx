@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  User as UserIcon,
   Calendar,
   FileText,
-  ShieldCheck,
   Download,
-  Clock,
-  Building2,
   Stethoscope,
-  Heart,
   Plus,
-  CheckCircle2,
+  ShieldCheck,
   AlertCircle,
-  Award,
+  HeartPulse,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { generatePrescriptionPDF } from '../../utils/pdfGenerator';
@@ -42,131 +37,124 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onNavigate, 
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-7xl space-y-12">
         
         {/* Welcome Hero Banner */}
-        <div className="bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
-              Patient Portal
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Welcome Back, {currentUser?.name || 'Rahul Verma'} 👋
-            </h1>
-            <p className="text-sky-100 text-xs sm:text-sm">
-              Blood Group: <strong className="text-white">{currentUser?.bloodGroup || 'O+'}</strong> • Emergency Contact: <strong className="text-white">{currentUser?.emergencyContact || '+91-98765-99999'}</strong>
-            </p>
-          </div>
+        <div
+          className="relative overflow-hidden rounded-[var(--r-lg)] p-8 sm:p-12 shadow-[var(--shadow-md)] animate-fade-up"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
+        >
+          {/* Subtle green ambient wash */}
+          <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full pointer-events-none opacity-10"
+               style={{ background: 'var(--green-light)', transform: 'translate(20%, -30%)' }} />
 
-          <div className="flex gap-3">
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="space-y-3">
+              <div className="eyebrow flex items-center gap-2">
+                <HeartPulse className="w-4 h-4" /> Patient Portal
+              </div>
+              <h1 className="display-font" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--text-primary)' }}>
+                Welcome, {currentUser?.name?.split(' ')[0] || 'Patient'}
+              </h1>
+              <div className="flex flex-wrap gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="flex items-center gap-1.5"><strong style={{ color: 'var(--text-primary)' }}>Blood Group:</strong> {currentUser?.bloodGroup || 'O+'}</span>
+                <span className="flex items-center gap-1.5"><strong style={{ color: 'var(--text-primary)' }}>Emergency:</strong> {currentUser?.emergencyContact || '+91-99999'}</span>
+              </div>
+            </div>
+
             <button
               onClick={() => onNavigate('hospitals')}
-              className="py-3 px-5 bg-white text-sky-700 hover:bg-sky-50 font-bold text-xs rounded-2xl shadow-lg transition-transform active:scale-95 flex items-center gap-2"
+              className="btn btn-primary shadow-[var(--shadow-sm)]"
             >
-              <Plus className="w-4 h-4" /> Book New Appointment
+              <Plus className="w-4 h-4" /> Book Appointment
             </button>
           </div>
         </div>
 
         {/* Dashboard Navigation Tabs */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`pb-3 text-xs font-bold border-b-2 whitespace-nowrap transition-colors ${
-              activeTab === 'overview'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Overview & Care Summary
-          </button>
-          <button
-            onClick={() => setActiveTab('appointments')}
-            className={`pb-3 text-xs font-bold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-              activeTab === 'appointments'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Appointments ({patientAppointments.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('prescriptions')}
-            className={`pb-3 text-xs font-bold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-              activeTab === 'prescriptions'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Digital Prescriptions & Reports ({patientPrescriptions.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('mediclaim')}
-            className={`pb-3 text-xs font-bold border-b-2 whitespace-nowrap transition-colors ${
-              activeTab === 'mediclaim'
-                ? 'border-sky-600 text-sky-600 dark:text-sky-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Mediclaim Insurance Status
-          </button>
+        <div className="flex gap-8 overflow-x-auto border-b animate-fade-up-delay-1" style={{ borderColor: 'var(--border)' }}>
+          {[
+            { id: 'overview', label: 'Care Overview' },
+            { id: 'appointments', label: `Appointments (${patientAppointments.length})` },
+            { id: 'prescriptions', label: `Prescriptions (${patientPrescriptions.length})` },
+            { id: 'mediclaim', label: 'Insurance' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className="pb-4 text-sm font-semibold whitespace-nowrap transition-colors relative"
+              style={{ color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)' }}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  className="absolute bottom-[-1px] left-0 right-0 h-0.5 rounded-full"
+                  style={{ background: 'var(--green)' }}
+                />
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Tab 1: Overview */}
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+            <div className="lg:col-span-2 space-y-8">
               
-              {/* Upcoming Appointment Card */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
+              {/* Upcoming Appointment */}
+              <div className="card p-8 space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-sky-500" /> Upcoming Appointment
+                  <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                    <Calendar className="w-5 h-5" style={{ color: 'var(--green)' }} /> Upcoming Appointment
                   </h3>
-                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">
-                    Confirmed
-                  </span>
+                  <span className="tag tag-sage">Confirmed</span>
                 </div>
 
                 {upcomingApts.length === 0 ? (
-                  <p className="text-xs text-slate-400 py-4">No upcoming appointments scheduled.</p>
+                  <p className="text-sm py-4" style={{ color: 'var(--text-muted)' }}>No upcoming appointments scheduled.</p>
                 ) : (
-                  <div className="p-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/60 dark:border-sky-800/60 space-y-3">
+                  <div
+                    className="p-6 rounded-[var(--r-md)] space-y-4"
+                    style={{ background: 'var(--green-light)', border: '1px solid var(--border)' }}
+                  >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{upcomingApts[0].doctorName}</h4>
-                        <p className="text-xs text-slate-500">{upcomingApts[0].doctorSpecialization} • {upcomingApts[0].hospitalName}</p>
+                        <h4 className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>{upcomingApts[0].doctorName}</h4>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{upcomingApts[0].doctorSpecialization} • {upcomingApts[0].hospitalName}</p>
                       </div>
-                      <span className="text-xs font-bold text-sky-600 dark:text-sky-400 bg-white dark:bg-slate-800 px-3 py-1 rounded-xl shadow-sm">
+                      <span className="tag" style={{ background: 'var(--bg-surface)', color: 'var(--green)' }}>
                         {upcomingApts[0].date} at {upcomingApts[0].timeSlot}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Reason for visit: <em>"{upcomingApts[0].symptoms}"</em>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                      Reason: <em style={{ color: 'var(--text-secondary)' }}>"{upcomingApts[0].symptoms}"</em>
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Recommended Doctors Slider */}
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Stethoscope className="w-5 h-5 text-teal-500" /> Top Rated Specialists
+              {/* Recommended Doctors */}
+              <div className="card p-8 space-y-6">
+                <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <Stethoscope className="w-5 h-5" style={{ color: 'var(--sage)' }} /> Top Rated Specialists
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {doctors.slice(0, 2).map((doc) => (
-                    <div key={doc.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 flex items-center gap-3">
-                      <img src={doc.photo} alt={doc.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                    <div
+                      key={doc.id}
+                      className="p-4 rounded-[var(--r-md)] flex items-center gap-4 transition-all hover:scale-[1.02] cursor-pointer"
+                      style={{ background: 'var(--bg-muted)' }}
+                      onClick={() => onSelectDoctor(doc.id)}
+                    >
+                      <img src={doc.photo} alt={doc.name} className="w-14 h-14 rounded-xl object-cover" />
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{doc.name}</h4>
-                        <p className="text-[10px] text-slate-500 truncate">{doc.specialization}</p>
-                        <button
-                          onClick={() => onSelectDoctor(doc.id)}
-                          className="mt-1 text-[11px] font-bold text-teal-600 dark:text-teal-400 hover:underline"
-                        >
-                          Book Visit →
-                        </button>
+                        <h4 className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>{doc.name}</h4>
+                        <p className="text-xs truncate" style={{ color: 'var(--text-secondary)' }}>{doc.specialization}</p>
+                        <span className="text-[11px] font-bold mt-1.5 block" style={{ color: 'var(--green)' }}>
+                          Book Visit &rarr;
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -174,19 +162,24 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onNavigate, 
               </div>
             </div>
 
-            {/* Mediclaim & Quick Summary Sidebar */}
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Insurance Mediclaim</h3>
-                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
-                  <div className="flex justify-between font-bold text-slate-900 dark:text-white">
-                    <span>{currentUser?.mediclaimProvider || 'Star Health Insurance'}</span>
-                    <span className="text-emerald-600 dark:text-emerald-400">{currentUser?.mediclaimStatus || 'Active'}</span>
+            {/* Sidebar */}
+            <div className="space-y-8">
+              <div className="card p-8 space-y-5">
+                <h3 className="eyebrow flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" /> Insurance Mediclaim
+                </h3>
+                <div
+                  className="p-5 rounded-[var(--r-md)] space-y-3"
+                  style={{ background: 'var(--sage-light)', color: 'var(--text-primary)' }}
+                >
+                  <div className="flex justify-between font-bold text-sm">
+                    <span>{currentUser?.mediclaimProvider || 'Star Health'}</span>
+                    <span style={{ color: 'var(--sage)' }}>{currentUser?.mediclaimStatus || 'Active'}</span>
                   </div>
-                  <div className="text-[11px] text-slate-500">
-                    Policy No: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{currentUser?.mediclaimNumber || 'SH-POL-99201948'}</span>
+                  <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                    Policy: <span className="font-mono font-bold">{currentUser?.mediclaimNumber || 'SH-POL-992'}</span>
                   </div>
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                     Expiry: <strong>{currentUser?.mediclaimExpiry || '2027-12-31'}</strong>
                   </div>
                 </div>
@@ -197,61 +190,71 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onNavigate, 
 
         {/* Tab 2: Appointments */}
         {activeTab === 'appointments' && (
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Appointment History</h3>
-            <div className="space-y-3">
-              {patientAppointments.map((apt) => (
-                <div key={apt.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between gap-4">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">{apt.doctorName} ({apt.doctorSpecialization})</h4>
-                    <p className="text-xs text-slate-500">{apt.hospitalName} • {apt.department}</p>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">Symptoms: {apt.symptoms}</p>
+          <div className="card p-8 space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Appointment History</h3>
+            <div className="space-y-4">
+              {patientAppointments.length === 0 ? (
+                <p className="text-sm py-4" style={{ color: 'var(--text-muted)' }}>No appointment history found.</p>
+              ) : (
+                patientAppointments.map((apt) => (
+                  <div
+                    key={apt.id}
+                    className="p-5 rounded-[var(--r-md)] flex flex-col sm:flex-row justify-between gap-4"
+                    style={{ border: '1px solid var(--border)' }}
+                  >
+                    <div>
+                      <h4 className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>{apt.doctorName} <span className="font-normal text-sm" style={{ color: 'var(--text-secondary)' }}>({apt.doctorSpecialization})</span></h4>
+                      <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{apt.hospitalName} • {apt.department}</p>
+                      <p className="text-xs mt-2 font-medium" style={{ color: 'var(--text-secondary)' }}>Symptoms: {apt.symptoms}</p>
+                    </div>
+                    <div className="text-right sm:self-center flex flex-col items-end">
+                      <span className="text-sm font-bold" style={{ color: 'var(--green)' }}>{apt.date} at {apt.timeSlot}</span>
+                      <span className={`tag mt-2 ${apt.status === 'confirmed' ? 'tag-sage' : 'tag-white'}`}>
+                        {apt.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right sm:self-center">
-                    <span className="text-xs font-bold text-sky-600 dark:text-sky-400 block">{apt.date} at {apt.timeSlot}</span>
-                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full inline-block mt-1 uppercase ${
-                      apt.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'
-                    }`}>
-                      {apt.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         )}
 
         {/* Tab 3: Prescriptions */}
         {activeTab === 'prescriptions' && (
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Digital Medical Prescriptions</h3>
-            <div className="space-y-4">
+          <div className="card p-8 space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Digital Prescriptions</h3>
+            <div className="space-y-5">
               {patientPrescriptions.length === 0 ? (
-                <p className="text-xs text-slate-400 py-4">No digital prescriptions generated yet.</p>
+                <p className="text-sm py-4" style={{ color: 'var(--text-muted)' }}>No digital prescriptions generated yet.</p>
               ) : (
                 patientPrescriptions.map((pres) => (
-                  <div key={pres.id} className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-4">
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
+                  <div
+                    key={pres.id}
+                    className="p-6 rounded-[var(--r-md)] space-y-5"
+                    style={{ background: 'var(--bg-muted)' }}
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
                       <div>
-                        <h4 className="text-base font-bold text-slate-900 dark:text-white">Prescription by {pres.doctorName}</h4>
-                        <p className="text-xs text-slate-500">{pres.hospitalName} • Date: {pres.date}</p>
+                        <h4 className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>Dr. {pres.doctorName}</h4>
+                        <p className="text-xs font-semibold mt-1" style={{ color: 'var(--text-secondary)' }}>{pres.hospitalName} • {pres.date}</p>
                       </div>
                       <button
                         onClick={() => {
                           generatePrescriptionPDF(pres);
                           showToast('PDF Download Initiated', `Generating Prescription_${pres.patientName}.pdf`, 'info');
                         }}
-                        className="py-2 px-4 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow transition-colors flex items-center gap-2 self-start sm:self-auto"
+                        className="btn btn-ghost"
                       >
-                        <Download className="w-4 h-4" /> Download PDF Prescription
+                        <Download className="w-4 h-4" /> Download PDF
                       </button>
                     </div>
 
-                    <div className="text-xs space-y-2">
-                      <div><strong className="text-slate-700 dark:text-slate-300">Diagnosis:</strong> {pres.diagnosis}</div>
+                    <div className="text-sm space-y-3">
+                      <div><strong style={{ color: 'var(--text-primary)' }}>Diagnosis:</strong> <span style={{ color: 'var(--text-secondary)' }}>{pres.diagnosis}</span></div>
                       <div>
-                        <strong className="text-slate-700 dark:text-slate-300">Prescribed Medicines:</strong>
-                        <ul className="list-disc pl-5 mt-1 space-y-1">
+                        <strong style={{ color: 'var(--text-primary)' }}>Prescribed Medicines:</strong>
+                        <ul className="list-disc pl-5 mt-2 space-y-1" style={{ color: 'var(--text-secondary)' }}>
                           {pres.medicines.map((m, i) => (
                             <li key={i}>{m.name} ({m.dosage}) - {m.frequency} for {m.durationDays} Days</li>
                           ))}

@@ -9,15 +9,12 @@ import {
   Stethoscope,
   Clock,
   Bed,
-  PhoneCall,
   SlidersHorizontal,
   ChevronRight,
-  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../context/LocationContext';
 import { calculateHaversineDistance, formatDistance } from '../../utils/haversine';
-import { Hospital, Doctor } from '../../types';
 
 interface HospitalSearchPageProps {
   onSelectHospital: (id: string) => void;
@@ -98,72 +95,81 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-7xl space-y-12">
         
         {/* Search Hero */}
-        <div className="bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 rounded-3xl p-8 sm:p-12 text-white shadow-xl">
-          <div className="max-w-3xl space-y-4">
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-              Find Hospitals & Medical Specialists
+        <div
+          className="relative overflow-hidden rounded-[var(--r-lg)] p-8 sm:p-12 shadow-[var(--shadow-md)] animate-fade-up"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
+        >
+          <div className="absolute top-0 left-0 w-[40vw] h-[40vw] rounded-full pointer-events-none opacity-10"
+               style={{ background: 'var(--green-light)', transform: 'translate(-20%, -30%)' }} />
+          
+          <div className="relative z-10 max-w-3xl space-y-5">
+            <h1 className="display-font" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: 'var(--text-primary)' }}>
+              Find Medical Experts
             </h1>
-            <p className="text-sky-100 text-sm sm:text-base">
+            <p className="text-sm font-medium leading-relaxed max-w-xl" style={{ color: 'var(--text-secondary)' }}>
               Real-time directory powered by GPS distance sorting, bed availability tracking, and verified patient ratings.
             </p>
 
             {/* Global Search Bar */}
-            <div className="relative mt-4">
-              <Search className="w-5 h-5 absolute left-4 top-4 text-slate-400" />
+            <div className="relative mt-6 max-w-2xl">
+              <Search className="w-5 h-5 absolute left-4 top-4" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by hospital name, doctor, specialization, treatment, or city..."
-                className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white text-slate-900 placeholder:text-slate-400 text-sm font-medium focus:outline-none shadow-2xl"
+                placeholder="Search by hospital name, doctor, specialization..."
+                className="input-base pl-12 py-4"
+                style={{ fontSize: '0.875rem', borderRadius: 'var(--r-md)', boxShadow: 'var(--shadow-sm)' }}
               />
             </div>
           </div>
         </div>
 
         {/* Tab Toggle: Hospitals vs Doctors */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
-          <div className="flex p-1 bg-slate-200 dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-4 animate-fade-up-delay-1" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex p-1 rounded-2xl" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border)' }}>
             <button
               onClick={() => setActiveTab('hospitals')}
-              className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                activeTab === 'hospitals'
-                  ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400'
-              }`}
+              className="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+              style={{
+                background: activeTab === 'hospitals' ? 'var(--bg-surface)' : 'transparent',
+                color: activeTab === 'hospitals' ? 'var(--green)' : 'var(--text-secondary)',
+                boxShadow: activeTab === 'hospitals' ? 'var(--shadow-sm)' : 'none'
+              }}
             >
               <Building2 className="w-4 h-4" /> Hospitals ({filteredHospitals.length})
             </button>
             <button
               onClick={() => setActiveTab('doctors')}
-              className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                activeTab === 'doctors'
-                  ? 'bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400'
-              }`}
+              className="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+              style={{
+                background: activeTab === 'doctors' ? 'var(--bg-surface)' : 'transparent',
+                color: activeTab === 'doctors' ? 'var(--sage)' : 'var(--text-secondary)',
+                boxShadow: activeTab === 'doctors' ? 'var(--shadow-sm)' : 'none'
+              }}
             >
               <Stethoscope className="w-4 h-4" /> Doctors ({filteredDoctors.length})
             </button>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-slate-500">
-            <SlidersHorizontal className="w-4 h-4 text-sky-500" />
-            <span>Interactive Multi-Param Filters Applied</span>
+          <div className="flex items-center gap-3 text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+            <SlidersHorizontal className="w-4 h-4" style={{ color: 'var(--green)' }} />
+            <span>Multi-Param Filters Applied</span>
           </div>
         </div>
 
         {/* Layout Grid: Sidebar Filters + Results */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
           
           {/* Filters Sidebar */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-6 h-fit">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Filter className="w-4 h-4 text-sky-500" /> Refine Search
+          <div className="card p-6 space-y-8 h-fit lg:sticky lg:top-24">
+            <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: 'var(--border)' }}>
+              <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <Filter className="w-4 h-4" style={{ color: 'var(--green)' }} /> Refine Search
               </h3>
               <button
                 onClick={() => {
@@ -173,21 +179,22 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
                   setMaxDistanceKm(50);
                   setSearchQuery('');
                 }}
-                className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                className="text-[11px] font-bold hover:underline"
+                style={{ color: 'var(--text-muted)' }}
               >
-                Reset All
+                Reset
               </button>
             </div>
 
             {/* Department Filter */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Department / Specialization
+              <label className="block text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Specialization
               </label>
               <select
                 value={selectedDepartment}
                 onChange={(e) => setSelectedDepartment(e.target.value)}
-                className="w-full p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                className="input-base text-xs"
               >
                 {departmentsList.map((d) => (
                   <option key={d} value={d}>
@@ -200,21 +207,17 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
             {/* Minimum Rating */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                <label className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
                   Minimum Rating
                 </label>
-                <span className="text-xs font-bold text-amber-500 flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-amber-400" /> {minRating > 0 ? `${minRating}+ Stars` : 'Any'}
+                <span className="text-xs font-bold flex items-center gap-1" style={{ color: 'var(--gold)' }}>
+                  <Star className="w-3 h-3 fill-current" /> {minRating > 0 ? `${minRating}+` : 'Any'}
                 </span>
               </div>
               <input
-                type="range"
-                min={0}
-                max={5}
-                step={0.5}
-                value={minRating}
-                onChange={(e) => setMinRating(parseFloat(e.target.value))}
-                className="w-full accent-sky-600"
+                type="range" min={0} max={5} step={0.5}
+                value={minRating} onChange={(e) => setMinRating(parseFloat(e.target.value))}
+                className="w-full accent-[var(--green)]"
               />
             </div>
 
@@ -222,21 +225,15 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
             {activeTab === 'hospitals' && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
                     Max Distance Radius
                   </label>
-                  <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
-                    {maxDistanceKm} km
-                  </span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--green)' }}>{maxDistanceKm} km</span>
                 </div>
                 <input
-                  type="range"
-                  min={2}
-                  max={50}
-                  step={2}
-                  value={maxDistanceKm}
-                  onChange={(e) => setMaxDistanceKm(parseInt(e.target.value))}
-                  className="w-full accent-sky-600"
+                  type="range" min={2} max={50} step={2}
+                  value={maxDistanceKm} onChange={(e) => setMaxDistanceKm(parseInt(e.target.value))}
+                  className="w-full accent-[var(--green)]"
                 />
               </div>
             )}
@@ -245,21 +242,15 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
             {activeTab === 'doctors' && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    Max Consultation Fee
+                  <label className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
+                    Max Fee
                   </label>
-                  <span className="text-xs font-bold text-teal-600 dark:text-teal-400">
-                    ₹{maxFee}
-                  </span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--sage)' }}>₹{maxFee}</span>
                 </div>
                 <input
-                  type="range"
-                  min={500}
-                  max={2500}
-                  step={100}
-                  value={maxFee}
-                  onChange={(e) => setMaxFee(parseInt(e.target.value))}
-                  className="w-full accent-teal-600"
+                  type="range" min={500} max={2500} step={100}
+                  value={maxFee} onChange={(e) => setMaxFee(parseInt(e.target.value))}
+                  className="w-full accent-[var(--sage)]"
                 />
               </div>
             )}
@@ -271,62 +262,54 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
             {activeTab === 'hospitals' ? (
               /* HOSPITAL CARDS LIST */
               filteredHospitals.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center text-slate-400 border border-slate-200 dark:border-slate-800">
-                  <Building2 className="w-12 h-12 mx-auto mb-3 text-slate-300 opacity-60" />
-                  <p className="text-sm font-semibold">No hospitals match your exact search parameters.</p>
+                <div className="card p-12 text-center border-dashed" style={{ borderColor: 'var(--border)' }}>
+                  <Building2 className="w-12 h-12 mx-auto mb-4 opacity-20" style={{ color: 'var(--text-primary)' }} />
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>No hospitals match your search parameters.</p>
                 </div>
               ) : (
                 filteredHospitals.map((hosp) => (
                   <motion.div
                     key={hosp.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-xl border border-slate-200 dark:border-slate-800 transition-all flex flex-col md:flex-row gap-6"
+                    className="card p-6 flex flex-col md:flex-row gap-6 transition-all hover:scale-[1.01]"
                   >
-                    <img
-                      src={hosp.images[0]}
-                      alt={hosp.name}
-                      className="w-full md:w-56 h-48 rounded-2xl object-cover"
-                    />
+                    <img src={hosp.images[0]} alt={hosp.name} className="w-full md:w-56 h-48 rounded-[var(--r-md)] object-cover" />
 
                     <div className="flex-1 flex flex-col justify-between space-y-4">
                       <div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                            {formatDistance(hosp.distanceKm)} away
-                          </span>
+                          <span className="tag tag-green">{formatDistance(hosp.distanceKm)} away</span>
 
-                          <div className="flex items-center gap-1 text-xs font-bold text-amber-500">
-                            <Star className="w-4 h-4 fill-amber-400" />
+                          <div className="flex items-center gap-1 text-xs font-bold" style={{ color: 'var(--gold)' }}>
+                            <Star className="w-3.5 h-3.5 fill-current" />
                             <span>{hosp.rating}</span>
-                            <span className="text-slate-400 font-normal">({hosp.reviewCount})</span>
+                            <span className="font-normal" style={{ color: 'var(--text-muted)' }}>({hosp.reviewCount})</span>
                           </div>
                         </div>
 
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-2">
-                          {hosp.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
-                          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <h3 className="text-xl font-bold mt-3" style={{ color: 'var(--text-primary)' }}>{hosp.name}</h3>
+                        <p className="text-xs mt-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+                          <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--text-muted)' }} />
                           {hosp.address}, {hosp.city}
                         </p>
 
-                        <div className="flex items-center gap-4 mt-3 text-xs text-slate-600 dark:text-slate-300">
+                        <div className="flex items-center gap-4 mt-4 text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>
                           <span className="flex items-center gap-1">
-                            <Bed className="w-4 h-4 text-emerald-500" />
-                            <strong>{hosp.availableBeds}</strong> Beds Free
+                            <Bed className="w-4 h-4" style={{ color: 'var(--green)' }} />
+                            <strong style={{ color: 'var(--text-primary)' }}>{hosp.availableBeds}</strong> Beds Free
                           </span>
                           <span className="flex items-center gap-1">
-                            <Clock className="w-4 h-4 text-sky-500" />
+                            <Clock className="w-4 h-4" style={{ color: 'var(--sage)' }} />
                             24/7 ER
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
-                        <div className="flex flex-wrap gap-1.5 max-w-md">
+                      <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                        <div className="flex flex-wrap gap-1.5 max-w-[200px] sm:max-w-md">
                           {hosp.departments.slice(0, 4).map((d, i) => (
-                            <span key={i} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-600 dark:text-slate-300">
+                            <span key={i} className="px-2 py-0.5 rounded text-[10px] font-medium" style={{ background: 'var(--bg-muted)', color: 'var(--text-secondary)' }}>
                               {d}
                             </span>
                           ))}
@@ -334,9 +317,9 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
 
                         <button
                           onClick={() => onSelectHospital(hosp.id)}
-                          className="py-2.5 px-5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1 shrink-0"
+                          className="btn btn-primary py-2 px-4 shadow-[var(--shadow-sm)] text-[11px] shrink-0"
                         >
-                          View Hospital <ChevronRight className="w-4 h-4" />
+                          View <ChevronRight className="w-3 h-3 ml-1" />
                         </button>
                       </div>
                     </div>
@@ -346,62 +329,53 @@ export const HospitalSearchPage: React.FC<HospitalSearchPageProps> = ({
             ) : (
               /* DOCTOR CARDS LIST */
               filteredDoctors.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center text-slate-400 border border-slate-200 dark:border-slate-800">
-                  <Stethoscope className="w-12 h-12 mx-auto mb-3 text-slate-300 opacity-60" />
-                  <p className="text-sm font-semibold">No doctor specialists match your filters.</p>
+                <div className="card p-12 text-center border-dashed" style={{ borderColor: 'var(--border)' }}>
+                  <Stethoscope className="w-12 h-12 mx-auto mb-4 opacity-20" style={{ color: 'var(--text-primary)' }} />
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>No doctors match your filters.</p>
                 </div>
               ) : (
                 filteredDoctors.map((doc) => (
                   <motion.div
                     key={doc.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-xl border border-slate-200 dark:border-slate-800 transition-all flex flex-col md:flex-row gap-6"
+                    className="card p-6 flex flex-col md:flex-row gap-6 transition-all hover:scale-[1.01]"
                   >
-                    <img
-                      src={doc.photo}
-                      alt={doc.name}
-                      className="w-24 h-24 rounded-2xl object-cover ring-2 ring-teal-500/30 shrink-0"
-                    />
+                    <img src={doc.photo} alt={doc.name} className="w-28 h-28 rounded-[var(--r-md)] object-cover shrink-0" style={{ border: '2px solid var(--green-light)' }} />
 
                     <div className="flex-1 flex flex-col justify-between space-y-4">
                       <div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
-                            {doc.specialization}
-                          </span>
+                          <span className="tag tag-sage">{doc.specialization}</span>
 
-                          <div className="flex items-center gap-1 text-xs font-bold text-amber-500">
-                            <Star className="w-4 h-4 fill-amber-400" />
+                          <div className="flex items-center gap-1 text-xs font-bold" style={{ color: 'var(--gold)' }}>
+                            <Star className="w-3.5 h-3.5 fill-current" />
                             <span>{doc.rating}</span>
-                            <span className="text-slate-400 font-normal">({doc.reviewCount})</span>
+                            <span className="font-normal" style={{ color: 'var(--text-muted)' }}>({doc.reviewCount})</span>
                           </div>
                         </div>
 
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                          {doc.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <h3 className="text-lg font-bold mt-2" style={{ color: 'var(--text-primary)' }}>{doc.name}</h3>
+                        <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
                           {doc.qualification} • {doc.experienceYears} Years Experience
                         </p>
-                        <p className="text-xs text-sky-600 dark:text-sky-400 font-medium mt-1 flex items-center gap-1">
+                        <p className="text-xs font-semibold mt-1.5 flex items-center gap-1" style={{ color: 'var(--sage)' }}>
                           <Building2 className="w-3.5 h-3.5" /> {doc.hospitalName}
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Consultation Fee</span>
-                          <span className="text-base font-extrabold text-slate-900 dark:text-white">
-                            ₹{doc.consultationFee}
-                          </span>
+                          <span className="text-[9px] uppercase tracking-wider block" style={{ color: 'var(--text-muted)' }}>Consultation Fee</span>
+                          <span className="text-sm font-extrabold" style={{ color: 'var(--text-primary)' }}>₹{doc.consultationFee}</span>
                         </div>
 
                         <button
                           onClick={() => onSelectDoctor(doc.id)}
-                          className="py-2.5 px-5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1"
+                          className="btn btn-primary py-2 px-4 shadow-[var(--shadow-sm)] text-[11px]"
+                          style={{ background: 'var(--sage)', color: '#fff' }}
                         >
-                          Book Appointment <ChevronRight className="w-4 h-4" />
+                          Book Visit <ChevronRight className="w-3 h-3 ml-1" />
                         </button>
                       </div>
                     </div>

@@ -6,14 +6,10 @@ import {
   Upload,
   Image as ImageIcon,
   AlertTriangle,
-  HeartPulse,
   Sparkles,
   ShieldCheck,
-  User,
   RefreshCw,
   ChevronRight,
-  Stethoscope,
-  Building2,
   X,
 } from 'lucide-react';
 import { AIMessage } from '../../types';
@@ -35,7 +31,7 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
     {
       id: 'msg-1',
       sender: 'ai',
-      text: `Hello! I am **MedConnect AI Assistant** powered by Gemini. 🩺\n\nHow can I help you today? You can:\n- **Attach photos of rashes, infections, wounds, cuts, burns, or swelling** using the 📸 image button below to detect causes & severity!\n- Ask about symptoms & basic precautions ("I have a fever", "Symptoms of dengue")\n- Get specialist doctor and department recommendations\n- Or switch to **Medical Image Triage** above for a structured clinical report!`,
+      text: `Hello! I am your **MedConnect AI Assistant**. 🩺\n\nHow can I support your health today? You can:\n- **Attach photos of concerns** (rashes, cuts, etc.) using the 📸 button to detect causes & severity.\n- Ask about symptoms & precautions ("I have a fever", "Symptoms of dengue")\n- Get specialist recommendations\n- Switch to **Medical Image Triage** for a structured clinical report!`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       disclaimer: 'This is AI-generated advice and should not replace professional medical diagnosis.',
     },
@@ -72,7 +68,7 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
     const reader = new FileReader();
     reader.onloadend = () => {
       setChatAttachedImage(reader.result as string);
-      showToast('Image Attached', 'Photo attached. You can now send it to analyze for infections and causes.', 'info');
+      showToast('Image Attached', 'Photo attached. You can now send it for analysis.', 'info');
     };
     reader.readAsDataURL(file);
   };
@@ -149,7 +145,7 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
     try {
       const result = await analyzeMedicalImage(selectedImage, imageNotes);
       setAnalysisResult(result);
-      showToast('Medical Image Analysis Complete', 'Gemini Vision triage summary generated below.', 'success');
+      showToast('Analysis Complete', 'Triage summary generated below.', 'success');
     } catch (err) {
       showToast('Analysis Error', 'Failed to evaluate image. Please try again.', 'error');
     } finally {
@@ -175,92 +171,104 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-5xl space-y-8">
         
         {/* Header Hero */}
-        <div className="bg-gradient-to-r from-sky-600 via-teal-600 to-indigo-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" /> Gemini 1.5/2.0 Vision Triage Engine
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold">MedConnect AI Healthcare Assistant</h1>
-            <p className="text-sky-100 text-xs">
-              Natural language health assistant & multi-modal medical image triage unit.
-            </p>
-          </div>
+        <div
+          className="relative overflow-hidden rounded-[var(--r-lg)] p-8 sm:p-10 shadow-[var(--shadow-md)] animate-fade-up"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
+        >
+          <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full pointer-events-none opacity-10"
+               style={{ background: 'var(--sage-light)', transform: 'translate(20%, -30%)' }} />
 
-          <div className="flex p-1 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-            <button
-              onClick={() => setActiveTab('chat')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'chat' ? 'bg-white text-sky-700 shadow-md' : 'text-white/80 hover:text-white'
-              }`}
-            >
-              💬 Health Chatbot
-            </button>
-            <button
-              onClick={() => setActiveTab('image-triage')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'image-triage' ? 'bg-white text-teal-700 shadow-md' : 'text-white/80 hover:text-white'
-              }`}
-            >
-              📸 Medical Image Triage
-            </button>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="space-y-4 max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider" style={{ background: 'var(--green-light)', color: 'var(--green)' }}>
+                <Sparkles className="w-3.5 h-3.5" /> AI Vision Engine
+              </div>
+              <h1 className="display-font" style={{ fontSize: 'clamp(2rem, 3.5vw, 2.5rem)', color: 'var(--text-primary)' }}>
+                MedConnect AI Assistant
+              </h1>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                Natural language health guidance & intelligent medical image triage.
+              </p>
+            </div>
+
+            <div className="flex p-1 rounded-xl" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border)' }}>
+              <button
+                onClick={() => setActiveTab('chat')}
+                className="px-5 py-2.5 rounded-lg text-[11px] font-bold transition-all shadow-sm"
+                style={{
+                  background: activeTab === 'chat' ? 'var(--bg-surface)' : 'transparent',
+                  color: activeTab === 'chat' ? 'var(--green)' : 'var(--text-secondary)',
+                }}
+              >
+                💬 Health Chatbot
+              </button>
+              <button
+                onClick={() => setActiveTab('image-triage')}
+                className="px-5 py-2.5 rounded-lg text-[11px] font-bold transition-all shadow-sm"
+                style={{
+                  background: activeTab === 'image-triage' ? 'var(--bg-surface)' : 'transparent',
+                  color: activeTab === 'image-triage' ? 'var(--sage)' : 'var(--text-secondary)',
+                }}
+              >
+                📸 Image Triage
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Tab 1: AI Health Chatbot */}
         {activeTab === 'chat' && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 flex flex-col h-[680px] overflow-hidden">
+          <div className="card flex flex-col h-[700px] overflow-hidden animate-fade-in shadow-[var(--shadow-md)]">
             
             {/* Disclaimer Bar */}
-            <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2.5 text-xs text-amber-700 dark:text-amber-300 font-semibold flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 animate-pulse" />
+            <div className="px-6 py-3 text-xs font-semibold flex items-center gap-2" style={{ background: 'var(--gold-light)', color: 'var(--gold)', borderBottom: '1px solid rgba(241,216,163,0.3)' }}>
+              <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>
-                "This is AI-generated advice and should not replace professional medical diagnosis."
+                "This is AI-generated guidance and should not replace professional medical diagnosis."
               </span>
             </div>
 
             {/* Chat Messages Log */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+            <div className="flex-1 p-6 sm:p-8 overflow-y-auto space-y-6" style={{ background: 'var(--bg-muted)' }}>
               {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
+                <div key={msg.id} className={`flex gap-4 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {msg.sender === 'ai' && (
-                    <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-[var(--shadow-sm)]" style={{ background: 'var(--green)', color: '#fff' }}>
                       <Bot className="w-5 h-5" />
                     </div>
                   )}
 
-                  <div className={`max-w-xl space-y-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                  <div className={`max-w-[85%] sm:max-w-xl space-y-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                     <div
-                      className={`p-4 rounded-2xl text-xs leading-relaxed inline-block shadow-sm ${
+                      className={`p-5 rounded-2xl text-[13px] leading-relaxed inline-block shadow-[var(--shadow-sm)] ${
                         msg.sender === 'user'
-                          ? 'bg-sky-600 text-white rounded-tr-none font-medium'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-none border border-slate-200/60 dark:border-slate-700/60'
+                          ? 'rounded-tr-none'
+                          : 'rounded-tl-none'
                       }`}
+                      style={{
+                        background: msg.sender === 'user' ? 'var(--green)' : 'var(--bg-surface)',
+                        color: msg.sender === 'user' ? '#fff' : 'var(--text-primary)',
+                        border: msg.sender === 'user' ? 'none' : '1px solid var(--border)'
+                      }}
                     >
                       {/* Attached Image inside message bubble */}
                       {msg.imageUrl && (
-                        <div className="mb-3 overflow-hidden rounded-xl border border-white/20 dark:border-slate-700 bg-black/5 dark:bg-black/30">
+                        <div className="mb-4 overflow-hidden rounded-[var(--r-md)] border">
                           <img
-                            src={msg.imageUrl}
-                            alt="Uploaded medical condition"
+                            src={msg.imageUrl} alt="Attached"
                             onClick={() => setPreviewModalImage(msg.imageUrl || null)}
-                            className="max-h-64 max-w-full rounded-xl object-cover cursor-zoom-in hover:opacity-95 transition-opacity"
+                            className="max-h-64 max-w-full rounded-t-[var(--r-md)] object-cover cursor-zoom-in hover:opacity-95 transition-opacity"
                           />
-                          <div className="px-2.5 py-1.5 bg-black/60 backdrop-blur-xs text-[10px] text-white flex items-center justify-between">
-                            <span className="flex items-center gap-1 font-semibold">
-                              <ImageIcon className="w-3 h-3 text-sky-400" /> Attached Medical Photo
+                          <div className="px-3 py-2 text-[10px] flex items-center justify-between" style={{ background: 'rgba(0,0,0,0.8)', color: '#fff' }}>
+                            <span className="flex items-center gap-1.5 font-semibold">
+                              <ImageIcon className="w-3 h-3" /> Medical Photo
                             </span>
-                            <span
-                              onClick={() => setPreviewModalImage(msg.imageUrl || null)}
-                              className="text-sky-300 hover:text-white cursor-pointer underline text-[9px]"
-                            >
-                              Click to expand 🔍
+                            <span onClick={() => setPreviewModalImage(msg.imageUrl || null)} className="cursor-pointer underline text-[9px]">
+                              Expand 🔍
                             </span>
                           </div>
                         </div>
@@ -269,22 +277,23 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
                       <div className="whitespace-pre-wrap">{msg.text}</div>
 
                       {msg.suggestedDepartment && (
-                        <div className="mt-3 pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
-                          <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
+                        <div className="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3" style={{ borderTop: `1px solid ${msg.sender === 'user' ? 'rgba(255,255,255,0.2)' : 'var(--border)'}` }}>
+                          <span className="text-[11px] font-bold" style={{ color: msg.sender === 'user' ? '#fff' : 'var(--sage)' }}>
                             Department: {msg.suggestedDepartment}
                           </span>
                           <button
                             onClick={() => onNavigate('doctors')}
-                            className="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[10px] font-bold shadow-xs transition-colors"
+                            className="btn btn-sm shadow-[var(--shadow-xs)]"
+                            style={{ background: 'var(--sage)', color: '#fff' }}
                           >
-                            Find {msg.suggestedDepartment} Specialist →
+                            Find Specialist &rarr;
                           </button>
                         </div>
                       )}
                     </div>
 
                     {msg.disclaimer && (
-                      <p className="text-[9px] text-slate-400 font-mono italic">
+                      <p className="text-[10px] italic" style={{ color: 'var(--text-muted)' }}>
                         {msg.disclaimer}
                       </p>
                     )}
@@ -293,9 +302,9 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
               ))}
 
               {isTyping && (
-                <div className="flex items-center gap-2 text-xs text-slate-400 italic">
-                  <Bot className="w-4 h-4 animate-spin text-sky-500" />
-                  Gemini API analyzing medical image & synthesizing guidance...
+                <div className="flex items-center gap-2 text-xs italic" style={{ color: 'var(--text-muted)' }}>
+                  <Bot className="w-4 h-4 animate-spin" style={{ color: 'var(--green)' }} />
+                  Gemini analyzing context...
                 </div>
               )}
 
@@ -303,16 +312,21 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
             </div>
 
             {/* Quick Preset Buttons */}
-            <div className="px-6 py-2 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 flex gap-2 overflow-x-auto">
+            <div className="px-6 py-3 flex gap-3 overflow-x-auto" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-surface)' }}>
               {presetQuestions.map((q, i) => (
                 <button
                   key={i}
                   onClick={() => handlePresetClick(q)}
-                  className={`px-3 py-1.5 rounded-full border text-[11px] font-medium whitespace-nowrap shadow-xs transition-all ${
+                  className={`px-4 py-2 rounded-full border text-[11px] font-bold whitespace-nowrap transition-all ${
                     q.startsWith('📸')
-                      ? 'bg-sky-500/10 border-sky-500/30 text-sky-700 dark:text-sky-300 hover:bg-sky-500/20 font-bold'
-                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400'
+                      ? 'shadow-[var(--shadow-sm)]'
+                      : 'hover:shadow-[var(--shadow-sm)]'
                   }`}
+                  style={{
+                    background: q.startsWith('📸') ? 'var(--green-light)' : 'var(--bg-muted)',
+                    color: q.startsWith('📸') ? 'var(--green)' : 'var(--text-secondary)',
+                    borderColor: q.startsWith('📸') ? 'transparent' : 'var(--border)',
+                  }}
                 >
                   {q}
                 </button>
@@ -321,22 +335,15 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
 
             {/* Image Preview Bar when image is attached but not yet sent */}
             {chatAttachedImage && (
-              <div className="px-4 py-2 bg-sky-50 dark:bg-sky-950/50 border-t border-sky-100 dark:border-sky-900/60 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="relative group">
-                    <img
-                      src={chatAttachedImage}
-                      alt="Attached preview"
-                      className="w-12 h-12 rounded-lg object-cover border-2 border-sky-500 shadow-sm"
-                    />
-                  </div>
+              <div className="px-6 py-3 flex items-center justify-between gap-3" style={{ background: 'var(--green-light)', borderTop: '1px solid var(--border)' }}>
+                <div className="flex items-center gap-4 min-w-0">
+                  <img src={chatAttachedImage} alt="Preview" className="w-12 h-12 rounded-[var(--r-md)] object-cover border-2 shadow-sm" style={{ borderColor: 'var(--green)' }} />
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-sky-900 dark:text-sky-200">
-                      <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-                      Medical Photo Attached
+                    <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: 'var(--green)' }}>
+                      <Sparkles className="w-3.5 h-3.5" /> Photo Attached
                     </div>
-                    <p className="text-[11px] text-sky-700 dark:text-sky-400 truncate">
-                      AI will inspect for infections, causes, severity & home care
+                    <p className="text-[11px] truncate" style={{ color: 'var(--text-secondary)' }}>
+                      AI will inspect for infections, causes & care guidance.
                     </p>
                   </div>
                 </div>
@@ -346,8 +353,7 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
                     setChatAttachedImage(null);
                     if (chatFileInputRef.current) chatFileInputRef.current.value = '';
                   }}
-                  className="p-1.5 rounded-full hover:bg-sky-200 dark:hover:bg-sky-900 text-slate-600 dark:text-slate-300 transition-colors"
-                  title="Remove attached image"
+                  className="btn-icon"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -355,24 +361,19 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
             )}
 
             {/* Input Bar */}
-            <form onSubmit={handleSendMessage} className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 sm:gap-3">
-              {/* Hidden file input for chat image attachment */}
+            <form onSubmit={handleSendMessage} className="p-4 sm:p-5 flex items-center gap-3" style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)' }}>
+              {/* Hidden file input */}
               <input
-                ref={chatFileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleChatImageUpload}
-                className="hidden"
-                id="chat-image-input"
+                ref={chatFileInputRef} type="file" accept="image/*"
+                onChange={handleChatImageUpload} className="hidden" id="chat-image-input"
               />
               <label
                 htmlFor="chat-image-input"
-                className={`p-2.5 sm:p-3 rounded-xl cursor-pointer transition-colors flex items-center justify-center shrink-0 ${
-                  chatAttachedImage
-                    ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-300 ring-2 ring-sky-500'
-                    : 'text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
-                title="Attach photo of skin rash, infection, cut, burn, or swelling"
+                className="p-3 rounded-[var(--r-md)] cursor-pointer transition-colors flex items-center justify-center shrink-0"
+                style={{
+                  background: chatAttachedImage ? 'var(--green-light)' : 'var(--bg-muted)',
+                  color: chatAttachedImage ? 'var(--green)' : 'var(--text-muted)'
+                }}
               >
                 <ImageIcon className="w-5 h-5" />
               </label>
@@ -383,15 +384,15 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={
                   chatAttachedImage
-                    ? 'Add description (optional, e.g., itchy rash started 2 days ago)...'
-                    : 'Ask about symptoms, or attach an image to detect infection & causes...'
+                    ? 'Add description (optional)...'
+                    : 'Ask about symptoms, or attach an image...'
                 }
-                className="flex-1 py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="input-base flex-1 py-4 text-sm"
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim() && !chatAttachedImage}
-                className="py-3 px-4 sm:px-5 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 shrink-0"
+                className="btn btn-primary py-4 px-6 disabled:opacity-50 flex items-center gap-2"
               >
                 <Send className="w-4 h-4" /> <span className="hidden sm:inline">Send</span>
               </button>
@@ -399,41 +400,42 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
           </div>
         )}
 
-        {/* Tab 2: Medical Image Analysis (Injuries, Skin infections, Swelling, Burns, Cuts, Rashes) */}
+        {/* Tab 2: Medical Image Analysis */}
         {activeTab === 'image-triage' && (
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-6 shadow-xl">
+          <div className="space-y-8 animate-fade-in">
+            <div className="card p-8 sm:p-12 space-y-8 shadow-[var(--shadow-md)]">
               
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <ImageIcon className="w-5 h-5 text-teal-500" /> AI Medical Image Analysis
-
+              <div className="space-y-3">
+                <h3 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <ImageIcon className="w-6 h-6" style={{ color: 'var(--sage)' }} /> AI Image Triage
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Upload a clear photograph of an injury, skin rash, swelling, burn, or cut. Gemini Vision evaluates visual indicators and generates clinical triage advice.
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  Upload a clear photograph of an injury, rash, swelling, or cut. Gemini AI evaluates visual indicators to generate clinical triage advice.
                 </p>
               </div>
 
-              <form onSubmit={handleAnalyzeImageSubmit} className="space-y-6">
+              <form onSubmit={handleAnalyzeImageSubmit} className="space-y-8">
                 
                 {/* Image Upload Box */}
-                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100/50 transition-colors">
+                <div className="border-2 border-dashed rounded-[var(--r-lg)] p-8 sm:p-12 text-center transition-colors hover:opacity-80" style={{ borderColor: 'var(--border)', background: 'var(--bg-muted)' }}>
                   {selectedImage ? (
                     <div className="relative inline-block">
-                      <img src={selectedImage} alt="Uploaded medical condition" className="max-h-64 rounded-xl shadow-lg border border-slate-300 dark:border-slate-700 mx-auto" />
+                      <img src={selectedImage} alt="Uploaded condition" className="max-h-64 rounded-[var(--r-md)] shadow-lg mx-auto object-contain" />
                       <button
-                        type="button"
-                        onClick={() => setSelectedImage(null)}
-                        className="absolute top-2 right-2 p-1.5 bg-rose-600 text-white rounded-full shadow"
+                        type="button" onClick={() => setSelectedImage(null)}
+                        className="absolute -top-3 -right-3 p-2 text-white rounded-full shadow-lg"
+                        style={{ background: 'var(--red)' }}
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
-                    <label className="cursor-pointer space-y-2 block">
-                      <Upload className="w-10 h-10 mx-auto text-teal-500 animate-pulse" />
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">Click to Upload Injury / Skin Image</span>
-                      <span className="text-[11px] text-slate-400 block">Supports JPG, PNG, WEBP (Max 5MB)</span>
+                    <label className="cursor-pointer flex flex-col items-center gap-4">
+                      <Upload className="w-12 h-12 animate-pulse" style={{ color: 'var(--sage)' }} />
+                      <div>
+                        <span className="text-sm font-bold block" style={{ color: 'var(--text-primary)' }}>Click to Upload Condition Image</span>
+                        <span className="text-xs block mt-1" style={{ color: 'var(--text-muted)' }}>Supports JPG, PNG (Max 5MB)</span>
+                      </div>
                       <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                     </label>
                   )}
@@ -441,30 +443,27 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
 
                 {/* Optional Notes */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Describe Symptoms / How long has this condition persisted?
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Symptoms / Context
                   </label>
                   <input
-                    type="text"
-                    value={imageNotes}
-                    onChange={(e) => setImageNotes(e.target.value)}
+                    type="text" value={imageNotes} onChange={(e) => setImageNotes(e.target.value)}
                     placeholder="e.g. Scalding hot water burn on forearm 2 hours ago..."
-                    className="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                    className="input-base py-4 text-sm"
                   />
                 </div>
 
                 <button
-                  type="submit"
-                  disabled={!selectedImage || isAnalyzingImage}
-                  className="w-full py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2"
+                  type="submit" disabled={!selectedImage || isAnalyzingImage}
+                  className="btn btn-primary w-full py-4 text-sm flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {isAnalyzingImage ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin" /> Analyzing Image with Gemini AI...
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Analyzing Image...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" /> Analyze Medical Image & Generate Triage Report
+                      <Sparkles className="w-4 h-4" /> Generate Triage Report
                     </>
                   )}
                 </button>
@@ -474,87 +473,76 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
             {/* Analysis Results Display Card */}
             {analysisResult && (
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-6 shadow-xl"
+                initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+                className="card p-8 sm:p-10 space-y-8 shadow-[var(--shadow-md)] border-t-4"
+                style={{ borderTopColor: 'var(--sage)' }}
               >
                 {/* Alert Disclaimer Header */}
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium space-y-1">
-                  <div className="flex items-center gap-2 font-bold">
-                    <AlertTriangle className="w-4 h-4 text-amber-500" /> AI-Generated Medical Triage Report
+                <div className="p-4 rounded-[var(--r-md)] border text-xs font-semibold space-y-1" style={{ background: 'var(--gold-light)', color: 'var(--gold)', borderColor: 'rgba(241,216,163,0.3)' }}>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> AI-Generated Triage Report
                   </div>
-                  <p className="text-[11px]">{analysisResult.disclaimer}</p>
+                  <p className="text-[10px]">{analysisResult.disclaimer}</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   
                   {/* Possible Conditions */}
-                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                      Possible Evaluated Conditions
-                    </h4>
-                    <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+                  <div className="p-6 rounded-[var(--r-md)] space-y-4" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border)' }}>
+                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Evaluated Conditions</h4>
+                    <ul className="space-y-2 text-sm" style={{ color: 'var(--text-primary)' }}>
                       {analysisResult.possibleConditions.map((cond, i) => (
-                        <li key={i} className="flex items-center gap-2 font-semibold">
-                          <span className="w-2 h-2 rounded-full bg-teal-500" /> {cond}
+                        <li key={i} className="flex items-start gap-2 font-medium">
+                          <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: 'var(--sage)' }} /> {cond}
                         </li>
                       ))}
                     </ul>
-
-                    <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs">
-                      <span className="text-slate-400">Severity Level:</span>
-                      <strong className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-                        analysisResult.severity.includes('Emergency') ? 'bg-rose-500/20 text-rose-500' : 'bg-emerald-500/20 text-emerald-500'
-                      }`}>
+                    <div className="pt-4 mt-2 flex justify-between items-center text-xs" style={{ borderTop: '1px solid var(--border)' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Severity Level:</span>
+                      <strong className="px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide" style={{
+                        background: analysisResult.severity.includes('Emergency') ? 'var(--red-light)' : 'var(--green-light)',
+                        color: analysisResult.severity.includes('Emergency') ? 'var(--red)' : 'var(--green)'
+                      }}>
                         {analysisResult.severity}
                       </strong>
                     </div>
                   </div>
 
-                  {/* Recommended Doctor Specialization */}
-                  <div className="p-5 rounded-2xl bg-teal-50/50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 space-y-3 flex flex-col justify-between">
+                  {/* Recommended Doctor */}
+                  <div className="p-6 rounded-[var(--r-md)] space-y-4 flex flex-col justify-between" style={{ background: 'var(--green-light)' }}>
                     <div>
-                      <h4 className="text-xs font-bold text-teal-700 dark:text-teal-300 uppercase tracking-wider">
-                        Recommended Specialist Consultation
-                      </h4>
-                      <p className="text-base font-extrabold text-slate-900 dark:text-white mt-1">
-                        {analysisResult.recommendedSpecialization}
-                      </p>
+                      <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--green)' }}>Recommended Consultation</h4>
+                      <p className="text-xl font-bold mt-2" style={{ color: 'var(--text-primary)' }}>{analysisResult.recommendedSpecialization}</p>
                     </div>
-
                     <button
                       onClick={() => onNavigate('doctors')}
-                      className="py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow transition-colors flex items-center justify-center gap-1.5"
+                      className="btn btn-primary py-3 px-5 text-xs flex items-center justify-center gap-2 mt-4"
+                      style={{ background: 'var(--green)', color: '#fff' }}
                     >
-                      Book {analysisResult.recommendedSpecialization} Doctor <ChevronRight className="w-4 h-4" />
+                      Book Specialist <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
-                {/* Home Remedies & Basic Precautions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                      Recommended Home Remedies & Immediate Care
-                    </h4>
-                    <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                {/* Precautions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Home Remedies & Care</h4>
+                    <ul className="space-y-2 text-sm" style={{ color: 'var(--text-primary)' }}>
                       {analysisResult.homeRemedies.map((rem, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                        <li key={i} className="flex items-start gap-2.5">
+                          <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--green)' }} />
                           <span>{rem}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                      Basic Precautions (Do Not Do)
-                    </h4>
-                    <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Do Not Do</h4>
+                    <ul className="space-y-2 text-sm" style={{ color: 'var(--text-primary)' }}>
                       {analysisResult.basicPrecautions.map((prec, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                        <li key={i} className="flex items-start gap-2.5">
+                          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--gold)' }} />
                           <span>{prec}</span>
                         </li>
                       ))}
@@ -563,11 +551,11 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
                 </div>
 
                 {/* Emergency Warning Signs */}
-                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs space-y-2">
-                  <h4 className="font-bold uppercase tracking-wider flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-rose-500" /> Seek Immediate ER Emergency Care If:
+                <div className="p-5 rounded-[var(--r-md)] space-y-3" style={{ background: 'var(--red-light)', border: '1px solid rgba(212,106,96,0.2)' }}>
+                  <h4 className="font-bold text-xs uppercase tracking-wider flex items-center gap-2" style={{ color: 'var(--red)' }}>
+                    <AlertTriangle className="w-4 h-4" /> Seek ER Emergency Care If:
                   </h4>
-                  <ul className="list-disc pl-5 space-y-1">
+                  <ul className="list-disc pl-6 space-y-1.5 text-sm font-medium" style={{ color: 'var(--red)' }}>
                     {analysisResult.emergencyWarningSigns.map((sign, i) => (
                       <li key={i}>{sign}</li>
                     ))}
@@ -583,31 +571,30 @@ export const AIChatbotPage: React.FC<AIChatbotPageProps> = ({ onNavigate, onSele
       {/* Enlarged Image Lightbox Modal */}
       {previewModalImage && (
         <div
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex items-center justify-center p-4 transition-all"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all"
+          style={{ background: 'rgba(11,17,16,0.9)' }}
           onClick={() => setPreviewModalImage(null)}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700 p-2 sm:p-4"
+            className="relative max-w-4xl max-h-[90vh] rounded-[var(--r-lg)] overflow-hidden shadow-2xl p-2 sm:p-4"
+            style={{ background: 'var(--bg-surface)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 px-2 text-white border-b border-slate-800">
-              <span className="text-xs font-bold flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-sky-400" /> Medical Image Detailed View
+            <div className="flex items-center justify-between pb-4 px-3 border-b" style={{ borderColor: 'var(--border)' }}>
+              <span className="text-sm font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <ImageIcon className="w-4 h-4" style={{ color: 'var(--sage)' }} /> Image Viewer
               </span>
               <button
-                type="button"
-                onClick={() => setPreviewModalImage(null)}
-                className="p-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-full transition-colors"
-                title="Close"
+                type="button" onClick={() => setPreviewModalImage(null)}
+                className="btn-icon" title="Close"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="pt-3 flex items-center justify-center">
+            <div className="pt-4 flex items-center justify-center">
               <img
-                src={previewModalImage}
-                alt="Enlarged medical condition"
-                className="max-h-[75vh] w-auto max-w-full rounded-2xl object-contain shadow-md"
+                src={previewModalImage} alt="Enlarged"
+                className="max-h-[75vh] w-auto max-w-full rounded-[var(--r-md)] object-contain shadow-[var(--shadow-md)]"
               />
             </div>
           </div>

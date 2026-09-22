@@ -3,19 +3,14 @@ import { motion } from 'framer-motion';
 import {
   Stethoscope,
   Calendar,
-  Clock,
-  User,
   CheckCircle2,
-  XCircle,
   FileText,
   Plus,
   Trash2,
   Download,
-  AlertCircle,
-  Award,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Appointment, MedicinePrescribed, Prescription } from '../../types';
+import { Appointment, MedicinePrescribed } from '../../types';
 import { generatePrescriptionPDF } from '../../utils/pdfGenerator';
 import { useToast } from '../../components/ui/Toast';
 
@@ -23,7 +18,7 @@ export const DoctorDashboard: React.FC = () => {
   const { currentUser, appointments, updateAppointmentStatus, createPrescription } = useAuth();
   const { showToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<'queue' | 'prescription' | 'calendar'>('queue');
+  const [activeTab, setActiveTab] = useState<'queue' | 'prescription'>('queue');
   const [selectedAptForRx, setSelectedAptForRx] = useState<Appointment | null>(null);
 
   // Prescription Form State
@@ -75,12 +70,7 @@ export const DoctorDashboard: React.FC = () => {
       hospitalId: selectedAptForRx.hospitalId,
       hospitalName: selectedAptForRx.hospitalName,
       date: new Date().toISOString().split('T')[0],
-      vitals: {
-        bloodPressure: '120/80 mmHg',
-        pulseRate: '72 bpm',
-        temperature: '98.6 °F',
-        weightKg: '70 kg',
-      },
+      vitals: { bloodPressure: '120/80 mmHg', pulseRate: '72 bpm', temperature: '98.6 °F', weightKg: '70 kg' },
       diagnosis,
       medicines,
       advice,
@@ -97,108 +87,103 @@ export const DoctorDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-base)' }}>
+      <div className="site-container max-w-7xl space-y-12">
         
         {/* Doctor Header Banner */}
-        <div className="bg-gradient-to-r from-teal-600 via-sky-600 to-indigo-600 rounded-3xl p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div className="space-y-2">
-            <span className="px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
-              Doctor Workstation
-            </span>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              {currentUser?.name || 'Dr. Rajesh Sharma'}
-            </h1>
-            <p className="text-teal-100 text-xs sm:text-sm">
-              {currentUser?.qualification || 'MBBS, MD'} • Reg No: <strong className="text-white">{currentUser?.medicalRegNo || 'DMC-CARD-88192'}</strong>
-            </p>
-          </div>
+        <div
+          className="relative overflow-hidden rounded-[var(--r-lg)] p-8 sm:p-12 shadow-[var(--shadow-md)] animate-fade-up"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
+        >
+          <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full pointer-events-none opacity-10"
+               style={{ background: 'var(--sage-light)', transform: 'translate(20%, -30%)' }} />
 
-          <div className="flex gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-xs text-center">
-            <div>
-              <span className="block text-teal-200 text-[10px] uppercase">Today's Queue</span>
-              <strong className="text-xl font-bold">{todayApts.length} Patients</strong>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="space-y-3">
+              <div className="eyebrow flex items-center gap-2">
+                <Stethoscope className="w-4 h-4" /> Doctor Workstation
+              </div>
+              <h1 className="display-font" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'var(--text-primary)' }}>
+                {currentUser?.name || 'Dr. Rajesh Sharma'}
+              </h1>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                {currentUser?.qualification || 'MBBS, MD'} • Reg No: <strong style={{ color: 'var(--text-primary)' }}>{currentUser?.medicalRegNo || 'DMC-CARD-88192'}</strong>
+              </p>
             </div>
-            <div className="border-l border-white/20 pl-4">
-              <span className="block text-teal-200 text-[10px] uppercase">Completed</span>
-              <strong className="text-xl font-bold">{completedApts.length} Visits</strong>
+
+            <div className="flex gap-4 p-5 rounded-[var(--r-md)] text-center shadow-[var(--shadow-sm)]" style={{ background: 'var(--bg-base)' }}>
+              <div>
+                <span className="block text-[10px] uppercase font-bold tracking-wider" style={{ color: 'var(--text-muted)' }}>Today's Queue</span>
+                <strong className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{todayApts.length}</strong>
+              </div>
+              <div className="pl-4" style={{ borderLeft: '1px solid var(--border)' }}>
+                <span className="block text-[10px] uppercase font-bold tracking-wider" style={{ color: 'var(--text-muted)' }}>Completed</span>
+                <strong className="text-2xl font-bold" style={{ color: 'var(--sage)' }}>{completedApts.length}</strong>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6">
-          <button
-            onClick={() => setActiveTab('queue')}
-            className={`pb-3 text-xs font-bold border-b-2 transition-colors ${
-              activeTab === 'queue'
-                ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Today's Patient Queue ({todayApts.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('prescription')}
-            className={`pb-3 text-xs font-bold border-b-2 transition-colors ${
-              activeTab === 'prescription'
-                ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            Prescription Writer & PDF Generator
-          </button>
+        <div className="flex border-b gap-8 animate-fade-up-delay-1" style={{ borderColor: 'var(--border)' }}>
+          {[
+            { id: 'queue', label: `Today's Queue (${todayApts.length})` },
+            { id: 'prescription', label: 'Prescription Writer' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className="pb-4 text-sm font-semibold whitespace-nowrap transition-colors relative"
+              style={{ color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)' }}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeDocTab"
+                  className="absolute bottom-[-1px] left-0 right-0 h-0.5 rounded-full"
+                  style={{ background: 'var(--green)' }}
+                />
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Tab 1: Queue */}
         {activeTab === 'queue' && (
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Active Patient Queue</h3>
+          <div className="card p-8 space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Active Patient Queue</h3>
             
             <div className="space-y-4">
               {todayApts.length === 0 ? (
-                <p className="text-xs text-slate-400 py-6 text-center">No active pending appointments in queue.</p>
+                <p className="text-sm py-6" style={{ color: 'var(--text-muted)' }}>No active pending appointments in queue.</p>
               ) : (
                 todayApts.map((apt) => (
-                  <div key={apt.id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col md:flex-row justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{apt.patientName}</h4>
-                        <span className="text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-full">
-                          Slot: {apt.timeSlot}
-                        </span>
+                  <div key={apt.id} className="p-5 rounded-[var(--r-md)] flex flex-col md:flex-row justify-between gap-5 transition-all hover:shadow-[var(--shadow-xs)]" style={{ border: '1px solid var(--border)', background: 'var(--bg-base)' }}>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <h4 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{apt.patientName}</h4>
+                        <span className="tag tag-sage">Slot: {apt.timeSlot}</span>
                       </div>
-                      <p className="text-xs text-slate-500">Phone: {apt.patientPhone} • Email: {apt.patientEmail}</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-300">Symptoms: <em>"{apt.symptoms}"</em></p>
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Phone: {apt.patientPhone} • Email: {apt.patientEmail}</p>
+                      <p className="text-sm font-medium mt-1" style={{ color: 'var(--text-primary)' }}>Symptoms: <em style={{ color: 'var(--text-secondary)' }}>"{apt.symptoms}"</em></p>
                     </div>
 
-                    <div className="flex items-center gap-2 self-start md:self-center">
+                    <div className="flex flex-wrap items-center gap-2 self-start md:self-center">
                       <button
-                        onClick={() => {
-                          setSelectedAptForRx(apt);
-                          setActiveTab('prescription');
-                        }}
-                        className="py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1"
+                        onClick={() => { setSelectedAptForRx(apt); setActiveTab('prescription'); }}
+                        className="btn btn-sm" style={{ background: 'var(--green-light)', color: 'var(--green)' }}
                       >
                         <FileText className="w-3.5 h-3.5" /> Write Rx
                       </button>
-
                       <button
-                        onClick={() => {
-                          updateAppointmentStatus(apt.id, 'completed');
-                          showToast('Appointment Completed', `${apt.patientName} visit marked completed.`, 'success');
-                        }}
-                        className="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors"
+                        onClick={() => { updateAppointmentStatus(apt.id, 'completed'); showToast('Completed', 'Visit marked completed.', 'success'); }}
+                        className="btn btn-sm" style={{ background: 'var(--sage-light)', color: 'var(--sage)' }}
                       >
-                        Complete
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Complete
                       </button>
-
                       <button
-                        onClick={() => {
-                          updateAppointmentStatus(apt.id, 'cancelled');
-                          showToast('Appointment Cancelled', `Appointment for ${apt.patientName} cancelled.`, 'info');
-                        }}
-                        className="py-2 px-2.5 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 text-xs font-bold rounded-xl transition-colors"
+                        onClick={() => { updateAppointmentStatus(apt.id, 'cancelled'); showToast('Cancelled', 'Appointment cancelled.', 'info'); }}
+                        className="btn btn-sm" style={{ background: 'var(--red-light)', color: 'var(--red)' }}
                       >
                         Cancel
                       </button>
@@ -210,87 +195,51 @@ export const DoctorDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 2: Prescription Writer Panel */}
+        {/* Tab 2: Prescription Writer */}
         {activeTab === 'prescription' && (
-          <form onSubmit={handleCreatePrescriptionSubmit} className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-6">
-            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-teal-500" /> Digital Prescription Writer
+          <form onSubmit={handleCreatePrescriptionSubmit} className="card p-8 space-y-8 animate-fade-in">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-5" style={{ borderColor: 'var(--border)' }}>
+              <h3 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <FileText className="w-5 h-5" style={{ color: 'var(--green)' }} /> Digital Prescription
               </h3>
               {selectedAptForRx && (
-                <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950 px-3 py-1 rounded-full">
-                  Selected Patient: {selectedAptForRx.patientName}
+                <span className="tag tag-green mt-3 sm:mt-0">
+                  Patient: {selectedAptForRx.patientName}
                 </span>
               )}
             </div>
 
             {/* Diagnosis */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Clinical Diagnosis
               </label>
               <input
-                required
-                type="text"
-                value={diagnosis}
-                onChange={(e) => setDiagnosis(e.target.value)}
-                placeholder="e.g. Acute Viral Bronchitis / Essential Hypertension"
-                className="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                required type="text" value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)}
+                placeholder="e.g. Acute Viral Bronchitis"
+                className="input-base"
               />
             </div>
 
-            {/* Prescribed Medicines Builder Table */}
-            <div className="space-y-3">
+            {/* Medicines */}
+            <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  Prescribed Medicines (Rx)
+                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
+                  Prescribed Medicines
                 </label>
-                <button
-                  type="button"
-                  onClick={handleAddMedicine}
-                  className="py-1.5 px-3 bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 hover:bg-teal-100 text-xs font-bold rounded-xl flex items-center gap-1"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Add Drug Row
+                <button type="button" onClick={handleAddMedicine} className="btn btn-sm btn-ghost flex items-center gap-1">
+                  <Plus className="w-3.5 h-3.5" /> Add Drug
                 </button>
               </div>
 
               {medicines.map((med, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
-                  <input
-                    required
-                    type="text"
-                    value={med.name}
-                    onChange={(e) => handleMedicineChange(idx, 'name', e.target.value)}
-                    placeholder="Medicine / Drug Name"
-                    className="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                  />
-                  <input
-                    type="text"
-                    value={med.dosage}
-                    onChange={(e) => handleMedicineChange(idx, 'dosage', e.target.value)}
-                    placeholder="Dosage (e.g. 500mg)"
-                    className="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                  />
-                  <input
-                    type="text"
-                    value={med.frequency}
-                    onChange={(e) => handleMedicineChange(idx, 'frequency', e.target.value)}
-                    placeholder="Frequency (1-0-1)"
-                    className="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                  />
+                <div key={idx} className="p-5 rounded-[var(--r-md)] grid grid-cols-1 sm:grid-cols-4 gap-4 items-center" style={{ background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
+                  <input required type="text" value={med.name} onChange={(e) => handleMedicineChange(idx, 'name', e.target.value)} placeholder="Drug Name" className="input-base" />
+                  <input type="text" value={med.dosage} onChange={(e) => handleMedicineChange(idx, 'dosage', e.target.value)} placeholder="Dosage" className="input-base" />
+                  <input type="text" value={med.frequency} onChange={(e) => handleMedicineChange(idx, 'frequency', e.target.value)} placeholder="Frequency" className="input-base" />
                   <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      value={med.durationDays}
-                      onChange={(e) => handleMedicineChange(idx, 'durationDays', Number(e.target.value))}
-                      placeholder="Days"
-                      className="p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white w-full"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveMedicine(idx)}
-                      className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg"
-                    >
+                    <input type="number" value={med.durationDays} onChange={(e) => handleMedicineChange(idx, 'durationDays', Number(e.target.value))} placeholder="Days" className="input-base w-full" />
+                    <button type="button" onClick={() => handleRemoveMedicine(idx)} className="btn-icon" style={{ color: 'var(--red)' }}>
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -298,39 +247,20 @@ export const DoctorDashboard: React.FC = () => {
               ))}
             </div>
 
-            {/* Special Advice & Follow-Up */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Advice & Follow-Up */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Special Advice & Precautions
-                </label>
-                <textarea
-                  rows={3}
-                  value={advice}
-                  onChange={(e) => setAdvice(e.target.value)}
-                  placeholder="Drink warm water, rest for 3 days, avoid heavy exertion..."
-                  className="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Advice & Precautions</label>
+                <textarea rows={3} value={advice} onChange={(e) => setAdvice(e.target.value)} placeholder="Rest, warm water..." className="input-base" />
               </div>
-
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Follow-up Visit Date
-                </label>
-                <input
-                  type="date"
-                  value={followUpDate}
-                  onChange={(e) => setFollowUpDate(e.target.value)}
-                  className="p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white w-full font-bold"
-                />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Follow-up Date</label>
+                <input type="date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} className="input-base" />
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2"
-            >
-              <Download className="w-4 h-4" /> Publish Digital Prescription & Generate PDF
+            <button type="submit" className="btn btn-primary w-full py-4 text-sm mt-4">
+              <Download className="w-4 h-4" /> Publish Prescription & Generate PDF
             </button>
           </form>
         )}
