@@ -1,6 +1,16 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+
+// Debug: log key status on startup (remove in production)
+if (!apiKey) {
+  console.error('[MedConnect AI] ❌ No API key found. Set VITE_GEMINI_API_KEY in your .env file.');
+} else if (!apiKey.startsWith('AIza')) {
+  console.warn('[MedConnect AI] ⚠️ API key looks invalid — Gemini keys should start with "AIza". Got prefix:', apiKey.substring(0, 8));
+} else {
+  console.log('[MedConnect AI] ✅ Gemini API key loaded successfully.');
+}
+
 const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 export interface MedicalImageAnalysisResult {
