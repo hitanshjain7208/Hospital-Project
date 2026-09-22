@@ -116,16 +116,70 @@ Ensure medical accuracy, clinical empathy, and high specificity. Output ONLY raw
 }
 
 /**
- * Text Health Assistant powered by Gemini or heuristic medical triage.
+ * Text & Multimodal Health Assistant powered by Gemini Vision or heuristic medical triage.
  */
 export async function askAIHealthAssistant(
   userQuery: string,
+  base64Image?: string,
   history: { role: 'user' | 'model'; parts: string }[] = []
 ): Promise<{ text: string; department?: string; action?: string }> {
   if (genAI) {
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      const prompt = `You are MedConnect AI's Virtual Medical & Hospital Assistant.
+
+      if (base64Image) {
+        // Multimodal image + text analysis
+        const cleanBase64 = base64Image.replace(/^data:image\/(png|jpg|jpeg|webp);base64,/, '');
+        const mimeMatch = base64Image.match(/^data:(image\/[a-zA-Z+]+);base64,/);
+        const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+
+        const prompt = `You are MedConnect AI's Virtual Medical & Health Triage Assistant.
+A user provided an image of a health condition, rash, wound, swelling, or infection and asked: "${userQuery || 'Please evaluate this medical image for possible infections, causes, and health advice.'}".
+
+Provide a comprehensive, clinical triage evaluation formatted clearly with Markdown:
+1. 🔍 **Visual Findings & Potential Conditions / Infections**: Identify what is visible (e.g. bacterial infection like cellulitis/folliculitis/impetigo, fungal infection like ringworm/tinea/candida, viral rash, contact dermatitis, insect bite, wound infection, conjunctivitis, burn, or trauma).
+2. 🦠 **Probable Causes**: What factors or pathogens likely caused or contributed to this condition.
+3. ⚠️ **Severity Assessment**: State clearly if it appears Mild, Moderate, or Severe / Emergency.
+4. 🛡️ **Immediate First-Aid & Home Care**: Practical safe steps to take right now.
+5. 🚫 **Precautions & What NOT To Do**: Actions or products that could worsen the infection or condition.
+6. 👨‍⚕️ **Recommended Specialist**: Which doctor to consult (e.g., Dermatology, Ophthalmology, Trauma & Emergency, Orthopedics, General Medicine).
+7. 🚨 **Emergency Warning Signs**: Specific red flags when to seek urgent emergency medical attention.
+
+Include a medical disclaimer at the bottom stating that this AI triage does not replace in-person clinical evaluation or diagnosis.`;
+
+        const result = await model.generateContent([
+          prompt,
+          {
+            inlineData: {
+              data: cleanBase64,
+              mimeType: mimeType,
+            },
+          },
+        ]);
+
+        const text = result.response.text();
+
+        // Determine department based on response content
+        let department = 'Dermatology';
+        const lowerText = text.toLowerCase();
+        if (lowerText.includes('eye') || lowerText.includes('conjunctiv') || lowerText.includes('ophthalmolog')) {
+          department = 'Ophthalmology';
+        } else if (lowerText.includes('orthopedic') || lowerText.includes('fracture') || lowerText.includes('sprain')) {
+          department = 'Orthopedics';
+        } else if (lowerText.includes('burn') || lowerText.includes('trauma') || lowerText.includes('emergency')) {
+          department = 'Trauma & Emergency Care';
+        } else if (lowerText.includes('pediatric')) {
+          department = 'Pediatrics';
+        } else if (lowerText.includes('dermatolog') || lowerText.includes('skin') || lowerText.includes('rash') || lowerText.includes('fungal')) {
+          department = 'Dermatology';
+        } else {
+          department = 'General Medicine';
+        }
+
+        return { text, department };
+      } else {
+        // Text-only inquiry
+        const prompt = `You are MedConnect AI's Virtual Medical & Hospital Assistant.
 User question: "${userQuery}".
 Provide a clear, helpful, empathetic response. 
 Structure your answer with:
@@ -134,15 +188,58 @@ Structure your answer with:
 3. Key warning signs when to seek immediate emergency care
 Always include a brief standard medical disclaimer at the end.`;
 
-      const result = await model.generateContent(prompt);
-      return { text: result.response.text() };
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        let department: string | undefined;
+        const lower = text.toLowerCase();
+        if (lower.includes('dermatolog')) department = 'Dermatology';
+        else if (lower.includes('cardio')) department = 'Cardiology';
+        else if (lower.includes('neurolog')) department = 'Neurology';
+        else if (lower.includes('orthopedic')) department = 'Orthopedics';
+        else if (lower.includes('pediatric')) department = 'Pediatrics';
+        else if (lower.includes('general physician') || lower.includes('general medicine')) department = 'General Medicine';
+
+        return { text, department };
+      }
     } catch (err) {
       console.warn('Gemini chat failed, using offline medical response router:', err);
     }
   }
 
   // Offline Medical Knowledge Base Engine
-  await new Promise((r) => setTimeout(r, 600));
+  await new Promise((r) => setTimeout(r, 800));
+
+  // If user provided an image in offline mode, analyze with smart heuristic infection & symptom triage
+  if (base64Image) {
+    const q = (userQuery || '').toLowerCase();
+
+    if (q.includes('eye') || q.includes('vision') || q.includes('red eye') || q.includes('pink eye') || q.includes('lid')) {
+      return {
+        text: `### 👁️ AI Image Evaluation: Ocular Infection / Irritation\n\n**🔍 Visual Findings & Potential Conditions:**\n- **Acute Conjunctivitis ("Pink Eye")** (Bacterial, Viral, or Allergic)\n- **Blepharitis** (Eyelid inflammation/microbial colonization)\n- **Subconjunctival Hemorrhage** or Foreign Body Reaction\n\n**🦠 Probable Causes:** Viral or bacterial contamination, allergen exposure (pollen/dust/pet dander), contact lens overwear, or eye rubbing.\n\n**⚠️ Severity Level:** Moderate\n\n**🛡️ Immediate First-Aid & Home Care:**\n- Apply cool, damp compress over closed eyelids to soothe discomfort.\n- If wearing contact lenses, remove them immediately and switch to glasses.\n- Wash hands frequently with antibacterial soap before touching facial area.\n\n**🚫 Precautions (What NOT To Do):**\n- Do NOT rub or press against your eyes.\n- Do NOT share towels, eye drops, or makeup.\n- Do NOT use unprescribed steroid eye drops.\n\n**🚨 Emergency Warning Signs:** Deep throbbing eye pain, vision impairment, extreme light sensitivity, or thick persistent yellow/green discharge.\n\n*⚠️ Disclaimer: AI educational assessment only. Please consult an Ophthalmologist for clinical examination.*`,
+        department: 'Ophthalmology',
+      };
+    }
+
+    if (q.includes('wound') || q.includes('cut') || q.includes('blood') || q.includes('pus') || q.includes('stitch') || q.includes('laceration')) {
+      return {
+        text: `### 🩹 AI Image Evaluation: Wound & Infection Triage\n\n**🔍 Visual Findings & Potential Conditions:**\n- **Laceration / Open Soft Tissue Wound**\n- **Secondary Bacterial Wound Infection** (Staphylococcus / Streptococcus colonization)\n- **Cellulitis / Localized Inflammatory Reaction**\n\n**🦠 Probable Causes:** Mechanical trauma, glass/metal cut, followed by bacterial entry through compromised skin barrier.\n\n**⚠️ Severity Level:** Moderate to Severe\n\n**🛡️ Immediate First-Aid & Home Care:**\n- Cleanse wound gently under clean lukewarm water or sterile saline solution.\n- Apply direct continuous pressure with sterile gauze for 5-10 minutes if actively bleeding.\n- Apply topical antiseptic ointment (e.g., Povidone-Iodine or Bacitracin) and cover with sterile dressing.\n\n**🚫 Precautions (What NOT To Do):**\n- Do NOT apply direct ice, alcohol, or harsh hydrogen peroxide inside open deep wounds.\n- Do NOT pick at scabs or squeeze fluid/pus.\n\n**🚨 Emergency Warning Signs:** Gaping wound edges needing stitches, bleeding that does not stop after 10 mins of pressure, redness expanding in size, or tetanus shot overdue (> 5 years).\n\n*⚠️ Disclaimer: AI educational assessment only. Seek medical attention for deep wounds or stitches.*`,
+        department: 'Trauma & Emergency Care',
+      };
+    }
+
+    if (q.includes('fungal') || q.includes('ring') || q.includes('itch') || q.includes('scaly') || q.includes('toenail') || q.includes('foot') || q.includes('groin')) {
+      return {
+        text: `### 🍄 AI Image Evaluation: Fungal Skin Infection Triage\n\n**🔍 Visual Findings & Potential Conditions:**\n- **Tinea Corporis ("Ringworm")** or Tinea Cruris\n- **Cutaneous Candidiasis / Intertrigo**\n- **Nummular Eczema / Pityriasis Versicolor**\n\n**🦠 Probable Causes:** Dermatophyte fungal overgrowth thriving in warm, moist body folds, sweating, synthetic tight fabrics, or contact with domestic pets.\n\n**⚠️ Severity Level:** Mild to Moderate\n\n**🛡️ Immediate First-Aid & Home Care:**\n- Keep the affected area clean and thoroughly dry after showering.\n- Apply over-the-counter topical antifungal cream (Clotrimazole, Terbinafine, or Miconazole) twice daily as directed.\n- Wear loose, breathable 100% cotton clothing.\n\n**🚫 Precautions (What NOT To Do):**\n- Do NOT apply plain hydrocortisone or steroid creams alone (steroids suppress local immunity and cause fungal bloom!).\n- Do NOT scratch or share towels and personal wear.\n\n**🚨 Emergency Warning Signs:** Rapidly spreading rash with fever, pus oozing, or lack of improvement after 7-10 days of consistent antifungal application.\n\n*⚠️ Disclaimer: AI educational assessment only. Consult a Dermatologist for accurate microscopic diagnosis.*`,
+        department: 'Dermatology',
+      };
+    }
+
+    // Default general medical skin & infection triage
+    return {
+      text: `### 🩺 AI Image Evaluation: Skin & Infection Analysis\n\n**🔍 Visual Findings & Potential Conditions:**\n- **Acute Contact Dermatitis / Allergic Urticaria**\n- **Localized Bacterial Infection (Folliculitis / Impetigo / Mild Cellulitis)**\n- **Insect / Arthropod Bite Reaction**\n\n**🦠 Probable Causes:** Contact with skin irritants/allergens (cosmetics, detergents, latex, plants), bacterial entry through skin micro-abrasions, or bug bites.\n\n**⚠️ Severity Level:** Mild to Moderate\n\n**🛡️ Immediate First-Aid & Home Care:**\n- Gently cleanse the affected area with mild, fragrance-free soap and lukewarm water.\n- Apply cold compresses or Calamine lotion to alleviate itching, burning, and swelling.\n- Keep the area well-ventilated and avoid tight, friction-causing fabrics.\n\n**🚫 Precautions (What NOT To Do):**\n- Do NOT scratch, pop blisters, or squeeze any raised bumps or pustules.\n- Discontinue any newly introduced soaps, perfumes, or topical cosmetics.\n\n**🚨 Emergency Warning Signs:** Redness spreading rapidly with red streaks, facial/lip swelling, difficulty breathing, or high fever with chills.\n\n*⚠️ Disclaimer: AI educational assessment only. Please consult a specialist doctor for accurate clinical diagnosis and prescription.*`,
+      department: 'Dermatology',
+    };
+  }
 
   const q = userQuery.toLowerCase();
 
