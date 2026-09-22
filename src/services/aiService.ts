@@ -25,7 +25,7 @@ export async function analyzeMedicalImage(
 
   if (genAI) {
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
       // Clean base64 header if present
       const cleanBase64 = base64Image.replace(/^data:image\/(png|jpg|jpeg|webp);base64,/, '');
@@ -125,7 +125,7 @@ export async function askAIHealthAssistant(
 ): Promise<{ text: string; department?: string; action?: string }> {
   if (genAI) {
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
       if (base64Image) {
         // Multimodal image + text analysis
